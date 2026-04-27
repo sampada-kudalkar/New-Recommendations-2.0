@@ -464,7 +464,7 @@ function ScoreCard({ rec, metrics }: { rec: Recommendation; metrics: BusinessMet
       </div>
 
       {/* Score and Legend Row */}
-      <div className="flex items-start gap-8 mt-2 mb-6">
+      <div className="flex items-start gap-8 mt-2 mb-2">
         {/* Your Score */}
         <div className="flex flex-col gap-1">
           <p className="text-[32px] font-normal text-[#212121] leading-none">
@@ -489,7 +489,7 @@ function ScoreCard({ rec, metrics }: { rec: Recommendation; metrics: BusinessMet
       </div>
 
       {/* Single track with 2 marker dots */}
-      <div className="relative h-2 bg-[#eaeaea] rounded-full mt-2">
+      <div className="relative h-2 bg-[#eaeaea] rounded-full mt-2 mb-1">
         {/* red fill from 0 to competitor (underneath) */}
         <div
           className="absolute left-0 top-0 h-full bg-[#F99E8F] rounded-full"
@@ -758,7 +758,7 @@ export default function ContentDetailPage() {
           <div className="px-5 pt-4 pb-2">
             <div className="flex items-start justify-between gap-4">
               <p className="text-[16px] text-[#212121] leading-[24px] font-normal">
-                Fix this gap
+                How can you fix this gap
               </p>
             </div>
             <div className="mt-5 flex items-start justify-between gap-4">
@@ -789,13 +789,7 @@ export default function ContentDetailPage() {
                 {rec.description}
               </p>
               <p className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">
-                You’re missing high-intent traffic for property appraisals in Dubbo.
-              </p>
-              <p className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">
-                A dedicated page can help you capture leads and improve search visibility. We’ve created a page draft based on what’s working for competitors.
-              </p>
-              <p className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">
-                Review and publish to start capturing appraisal leads.
+                You’re missing high-intent traffic for property appraisals in Dubbo. A dedicated page can help you capture leads and improve search visibility. We’ve created a page draft based on what’s working for competitors. Review and publish to start capturing appraisal leads.
               </p>
             </div>
             <BlogPreviewBox
