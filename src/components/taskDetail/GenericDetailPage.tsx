@@ -82,7 +82,7 @@ function ScoreCard({ rec, metrics }: { rec: Recommendation; metrics: BusinessMet
         <div className="absolute left-0 top-0 h-full bg-[#1976d2] rounded-full" style={{ width: `${yourW}%` }} />
         {compW > yourW && (
           <div
-            className="absolute top-0 h-full bg-[#e53935] rounded-full"
+            className="absolute top-0 h-full bg-[#F99E8F] rounded-full"
             style={{ left: `${yourW}%`, width: `${compW - yourW}%` }}
           />
         )}
@@ -159,7 +159,6 @@ export default function GenericDetailPage() {
               <p className="text-[16px] text-[#555] leading-[24px] tracking-[-0.32px] font-normal">
                 {rec.title}
               </p>
-
             </div>
             {locationCount > 0 && (
               <div 

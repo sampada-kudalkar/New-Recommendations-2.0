@@ -6,6 +6,10 @@ import { nsaThemesConfig } from '../../data/nsaThemesConfig'
 import { getLocationsForRec } from '../../data/locationsData'
 import { useAppStore } from '../../store/useAppStore'
 
+import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '../ui/drawer'
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../ui/tooltip'
+import { Info } from 'lucide-react'
+
 const BASE = import.meta.env.BASE_URL
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -14,14 +18,6 @@ function PinIcon() {
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
       <path d="M20 10c0 6-8 13-8 13s-8-7-8-13a8 8 0 0 1 16 0Z" />
       <circle cx="12" cy="10" r="3" />
-    </svg>
-  )
-}
-
-function ChevronDown({ className = '' }: { className?: string }) {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <polyline points="6 9 12 15 18 9" />
     </svg>
   )
 }
@@ -460,145 +456,231 @@ function ScoreCard({ rec, metrics }: { rec: Recommendation; metrics: BusinessMet
 
   return (
     <div className="bg-white border border-[#eaeaea] rounded-lg p-5 flex flex-col gap-3 h-full">
-      <p className="text-[16px] text-[#212121] leading-[24px] font-normal">
-        What is your {metricLabel} for {label}?
-      </p>
-      <p className="text-[12px] text-[#555] leading-[18px] font-normal" style={{ marginTop: 4 }}>You vs competitor average</p>
-
-      {/* Big numbers — your score left-aligned, competitor left-aligned to red dot */}
-      <div className="relative mt-1" style={{ height: 36 }}>
-        <p className="absolute text-[28px] font-normal text-[#212121] leading-none" style={{ left: 0 }}>
-          {current.toFixed(0)}%
+      <div>
+        <p className="text-[16px] text-[#212121] leading-[24px] font-normal mb-1">
+          What is your {metricLabel} for '{label}'
         </p>
-        <p
-          className="absolute text-[28px] font-normal text-[#212121] leading-none"
-          style={{ left: `${compW}%` }}
-        >
-          {compPct.toFixed(0)}%
-        </p>
+        <p className="text-[12px] text-[#555] leading-[18px] font-normal">You vs competitor average</p>
       </div>
 
-      {/* Legend */}
-      <div className="flex items-center gap-4">
-        <span className="flex items-center gap-1.5 text-[11px] text-[#555]">
-          <span className="w-2 h-2 rounded-full bg-[#1976d2] flex-shrink-0" />
-          Current score
-        </span>
-        <span className="flex items-center gap-1.5 text-[11px] text-[#555]">
-          <span className="w-2 h-2 rounded-full bg-[#e53935] flex-shrink-0" />
-          Competitor average
-        </span>
+      {/* Score and Legend Row */}
+      <div className="flex items-start gap-8 mt-2 mb-6">
+        {/* Your Score */}
+        <div className="flex flex-col gap-1">
+          <p className="text-[32px] font-normal text-[#212121] leading-none">
+            {current.toFixed(0)}%
+          </p>
+          <span className="flex items-center gap-1.5 text-[11px] text-[#555]">
+            <span className="w-2 h-2 rounded-full bg-[#1976d2] flex-shrink-0" />
+            Current score
+          </span>
+        </div>
+
+        {/* Competitor Score */}
+        <div className="flex flex-col gap-1">
+          <p className="text-[32px] font-normal text-[#212121] leading-none">
+            {compPct.toFixed(0)}%
+          </p>
+          <span className="flex items-center gap-1.5 text-[11px] text-[#555]">
+            <span className="w-2 h-2 rounded-full bg-[#e53935] flex-shrink-0" />
+            Competitor average
+          </span>
+        </div>
       </div>
 
       {/* Single track with 2 marker dots */}
       <div className="relative h-2 bg-[#eaeaea] rounded-full mt-2">
-        {/* blue fill up to your score */}
+        {/* red fill from 0 to competitor (underneath) */}
+        <div
+          className="absolute left-0 top-0 h-full bg-[#F99E8F] rounded-full"
+          style={{ width: `${compW}%` }}
+        />
+        {/* blue fill from 0 to your score (on top) */}
         <div
           className="absolute left-0 top-0 h-full bg-[#1976d2] rounded-full"
           style={{ width: `${yourW}%` }}
         />
-        {/* red fill from your score to competitor */}
-        {compW > yourW && (
-          <div
-            className="absolute top-0 h-full bg-[#e53935] rounded-full"
-            style={{ left: `${yourW}%`, width: `${compW - yourW}%` }}
-          />
-        )}
         {/* blue dot — current score */}
         <div
-          className="absolute top-1/2 w-2 h-2 bg-[#1976d2] rounded-full border-2 border-white shadow-sm"
-          style={{ left: `${yourW}%`, transform: 'translate(-50%, -50%)', boxSizing: 'content-box' }}
+          className="absolute top-1/2 w-3.5 h-3.5 bg-[#1976d2] rounded-full border-2 border-white shadow-sm z-20"
+          style={{ left: `${yourW}%`, transform: 'translate(-50%, -50%)', boxSizing: 'border-box' }}
         />
         {/* red dot — competitor average */}
         <div
-          className="absolute top-1/2 w-2 h-2 bg-[#e53935] rounded-full border-2 border-white shadow-sm"
-          style={{ left: `${compW}%`, transform: 'translate(-50%, -50%)', boxSizing: 'content-box' }}
+          className="absolute top-1/2 w-3.5 h-3.5 bg-[#e53935] rounded-full border-2 border-white shadow-sm z-10"
+          style={{ left: `${compW}%`, transform: 'translate(-50%, -50%)', boxSizing: 'border-box' }}
         />
       </div>
     </div>
   )
 }
 
-// ── AEO comparison table (Figma 374-35219) ───────────────────────────────────
-function AeoComparisonTable({ rec }: { rec: Recommendation }) {
-  const [open, setOpen] = useState(false)
-  const [subOpen, setSubOpen] = useState(true)
+// ── AEO score drawer (Replaces Comparison Table) ───────────────────────────────────
+function AeoScoreDrawer({ rec }: { rec: Recommendation }) {
   const aeo  = rec.aeoScore ? { ...rec.aeoScore, you: 98 } : undefined
   const comp = rec.competitors[0]
   if (!aeo || !comp) return null
 
+  const tooltips: Record<string, string> = {
+    'Readability': 'Readability measures how easy your content is to scan and understand, both for users and AI models. Clear structure and balanced formatting help an AI system extract key facts accurately. Includes signals like paragraph length and use of images, among others.',
+    'Content freshness': 'Content freshness tracks how recently your content was updated and how clearly it signals recency. AI systems tend to favor pages that appear timely and actively maintained. Includes features like days since last update and whether dates appear in URLs or titles.',
+    'Content structure': 'Content structure evaluates how well your page is organized with titles, headings, and subheadings. A clear hierarchy helps both users and AI systems understand key sections and themes. Includes signals like heading depth and title length, among others.',
+    'Information density': 'Information density evaluates how much meaningful, on-topic information your content provides. Pages that communicate product details, reviews, or summarize concisely tend to perform better in AI results. Includes features like whether headings mentioned offerings or reviews, among others.',
+    'Machine readability': 'Machine readability accesses how easily AI systems can interpret your content, page structure, and metadata. Strong schema markup and structured data improve your visibility in AI-generated answers. Includes signals like the presence of FAQ or article schema or author markup, and more.',
+    'Answer signals': 'Answer signals measure how closely your content aligns with common AI query phrasing and intent. Higher similarity between your texts and real AI questions increases your chance of being cited. Includes semantic similarity between page text and AI search queries (in brackets, titles, headings, paragraphs, etc.).'
+  }
+
+  // Calculate widths for the top progress bar
+  const youW = Math.min(aeo.you, 100)
+  const compW = Math.min(aeo.competitor, 100)
+
   return (
-    <div className="bg-[#fafafa] rounded-lg overflow-hidden">
-      {/* Collapsible header — title + subtitle on left, chevron on right */}
-      <button
-        onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[#f0f0f0] transition-colors"
-      >
-        <div className="flex flex-col gap-0.5">
-          <p className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px] font-normal">
-            Compare AEO content score for Search AI generated blog vs competitor's blog
-          </p>
-          <p className="text-[12px] text-[#555] leading-[18px] mt-[2px] tracking-[-0.24px] font-normal">
+    <Drawer direction="right">
+      <DrawerTrigger asChild>
+        <button className="h-9 px-4 bg-white border border-[#eaeaea] text-[#212121] text-[14px] leading-[20px] rounded hover:bg-[#f5f5f5] transition-colors whitespace-nowrap font-normal">
+          Compare score
+        </button>
+      </DrawerTrigger>
+      <DrawerContent className="!max-w-[40vw] w-[40vw] mt-0 rounded-none border-l border-[#eaeaea] bg-white">
+        <DrawerHeader className="border-b border-[#eaeaea] flex flex-row items-center gap-3 px-6 py-4">
+          <DrawerClose className="hover:bg-[#f5f5f5] p-1 rounded transition-colors">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+          </DrawerClose>
+          <DrawerTitle className="text-[18px] font-normal text-[#212121] leading-[26px]">Compare AEO content score</DrawerTitle>
+        </DrawerHeader>
+        
+        <div className="px-6 py-4 overflow-y-auto flex flex-col gap-6">
+          <p className="text-[14px] text-[#212121] leading-[20px] font-normal">
             AEO content score predicts how well your page is likely to perform in answers generated by AI
           </p>
-        </div>
-        <ChevronDown className={`text-[#555] flex-shrink-0 ml-4 transition-transform ${open ? 'rotate-180' : ''}`} />
-      </button>
 
-      {open && (
-        <div className="overflow-x-auto px-6">
-          <table className="w-full border-collapse">
-            <colgroup>
-              <col style={{ width: '52%' }} />
-              <col style={{ width: '24%' }} />
-              <col style={{ width: '24%' }} />
-            </colgroup>
-            <thead>
-              <tr className="bg-[#fafafa] border-b border-[#e9e9eb]">
-                <th className="text-left px-1 py-[16px] text-[12px] text-[#212121] font-normal leading-[18px] tracking-[-0.24px]">
-                  Score
-                </th>
-                <th className="text-left p-[16px] text-[12px] font-normal leading-[18px]">
-                  <span className="inline-flex items-center justify-center px-[7px] py-[2px] bg-[#0f7195] text-white text-[9px] leading-[14px] rounded-full font-normal border border-white">
-                    You
-                  </span>
-                </th>
-                <th className="text-left p-[16px] text-[12px] text-[#555] font-normal leading-[18px]">
-                  <span className="truncate max-w-[100px]">{comp.name}</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Total row */}
-              <tr className="bg-[#fafafa] border-b border-[#eaeaea]">
-                <td className="px-1 py-2">
-                  <button
-                    onClick={() => setSubOpen(o => !o)}
-                    className="flex items-center gap-1 cursor-pointer"
-                  >
-                    <ChevronDown className={`w-4 h-4 text-[#555] flex-shrink-0 transition-transform ${subOpen ? '' : '-rotate-90'}`} />
-                    <span className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">AEO content score</span>
-                  </button>
-                </td>
-                <td className="px-[20px] py-2 text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">{aeo.you}%</td>
-                <td className="px-[20px] py-2 text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">{aeo.competitor}%</td>
-              </tr>
-              {/* Sub-score rows */}
-              {subOpen && aeo.subScores.map((row, i) => (
-                <tr key={i} className="bg-[#fafafa] border-b border-[#eaeaea] last:border-b-0">
-                  <td className="px-[24px] py-2">
-                    <p className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">{row.name}</p>
-                    <p className="text-[12px] text-[#555] leading-[18px] tracking-[-0.24px]">Weights: {row.weight}</p>
-                  </td>
-                  <td className="px-[20px] py-2 text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">{row.you}%</td>
-                  <td className="px-[20px] py-2 text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">{row.competitor}%</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {/* Top Score Comparison */}
+          <div className="bg-[#fafafa] p-6 pb-8 flex flex-col gap-6">
+            <div className="flex items-start justify-between">
+              {/* Left Column (You) */}
+              <div className="flex flex-col gap-1">
+                <div className="flex items-end gap-1">
+                  <span className="text-[40px] text-[#4cae3d] leading-[48px] font-normal">{aeo.you}</span>
+                  <span className="text-[16px] text-[#8f8f8f] leading-[32px] pb-1">/ 100</span>
+                </div>
+                <div className="flex items-center gap-1.5 mt-2">
+                  <div className="w-2 h-2 rounded-full bg-[#1976d2] flex-shrink-0" />
+                  <span className="text-[14px] text-[#212121] leading-[20px] font-normal">Your Search AI generated blog</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-0.5">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                    <polyline points="15 3 21 3 21 9" />
+                    <line x1="10" y1="14" x2="21" y2="3" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Right Column (Competitor) */}
+              <div className="flex flex-col gap-1">
+                <div className="flex items-end gap-1">
+                  <span className="text-[40px] text-[#212121] leading-[48px] font-normal">{aeo.competitor}</span>
+                  <span className="text-[16px] text-[#8f8f8f] leading-[32px] pb-1">/ 100</span>
+                </div>
+                <div className="flex items-center gap-1.5 mt-2">
+                  <div className="w-2 h-2 rounded-full bg-[#e53935] flex-shrink-0" />
+                  <span className="text-[14px] text-[#212121] leading-[20px] font-normal">{comp.name}'s blog</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-0.5">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                    <polyline points="15 3 21 3 21 9" />
+                    <line x1="10" y1="14" x2="21" y2="3" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            <div className="relative h-2 bg-[#eaeaea] rounded-full mt-4">
+              {/* blue fill up to your score */}
+              <div
+                className="absolute left-0 top-0 h-full bg-[#1976d2] rounded-full"
+                style={{ width: `${youW}%` }}
+              />
+              {/* red fill from your score to competitor */}
+              {compW > youW && (
+                <div
+                  className="absolute top-0 h-full bg-[#F99E8F] rounded-full"
+                  style={{ left: `${youW}%`, width: `${compW - youW}%` }}
+                />
+              )}
+              {/* red dot — competitor average */}
+              <div
+                className="absolute top-1/2 w-3 h-3 bg-[#e53935] rounded-full border-2 border-white shadow-sm z-10"
+                style={{ left: `${compW}%`, transform: 'translate(-50%, -50%)', boxSizing: 'content-box' }}
+              />
+              {/* blue dot — current score */}
+              <div
+                className="absolute top-1/2 w-3 h-3 bg-[#1976d2] rounded-full border-2 border-white shadow-sm z-20"
+                style={{ left: `${youW}%`, transform: 'translate(-50%, -50%)', boxSizing: 'content-box' }}
+              />
+            </div>
+          </div>
+
+          {/* Detailed Breakdown Table */}
+          <div className="flex flex-col gap-4 mt-2">
+            <p className="text-[14px] text-[#212121] leading-[20px] font-normal">
+              AEO content score predicts how well your page is likely to perform in answers generated by AI
+            </p>
+            <div className="overflow-hidden">
+              <table className="w-full border-collapse">
+                <colgroup>
+                  <col style={{ width: '52%' }} />
+                  <col style={{ width: '24%' }} />
+                  <col style={{ width: '24%' }} />
+                </colgroup>
+                <thead>
+                  <tr className="border-b border-[#eaeaea]">
+                    <th className="text-left py-3 text-[12px] text-[#212121] font-normal leading-[18px]">
+                      AEO score breakdown
+                    </th>
+                    <th className="text-left py-3 text-[12px] font-normal leading-[18px]">
+                      <span className="inline-flex items-center justify-center px-2 py-0.5 bg-[#0f7195] text-white text-[10px] leading-[14px] rounded-full font-normal">
+                        You
+                      </span>
+                    </th>
+                    <th className="text-left py-3 text-[12px] text-[#555] font-normal leading-[18px]">
+                      <span className="truncate max-w-[120px] block">{comp.name}</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <TooltipProvider delayDuration={300}>
+                    {aeo.subScores.map((row, i) => (
+                      <tr key={i} className="border-b border-[#eaeaea]">
+                        <td className="py-4">
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-[14px] text-[#212121] leading-[20px]">{row.name}</p>
+                            {tooltips[row.name] && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Info className="w-3.5 h-3.5 text-[#888] cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent side="right" className="max-w-[300px] p-3 text-[12px] leading-[18px] font-normal">
+                                  {tooltips[row.name]}
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+                          </div>
+                          <p className="text-[12px] text-[#555] leading-[18px] mt-0.5">Weights: {row.weight}</p>
+                        </td>
+                        <td className="py-4 text-[14px] text-[#212121] leading-[20px]">{row.you}%</td>
+                        <td className="py-4 text-[14px] text-[#212121] leading-[20px]">{row.competitor}%</td>
+                      </tr>
+                    ))}
+                  </TooltipProvider>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-      )}
-    </div>
+      </DrawerContent>
+    </Drawer>
   )
 }
 
@@ -612,7 +694,7 @@ export default function ContentDetailPage() {
 
   // Location hover popover state (portal kept for future use)
   const [showLocHover, setShowLocHover] = useState(false)
-  const [locPopoverPos, setLocPopoverPos] = useState({ top: 0, left: 0 })
+  const [locPopoverPos, setLocPopoverPos] = useState({ top: 0, right: 0 })
   const [showBlogModal, setShowBlogModal] = useState(false)
 
   if (!rec) return null
@@ -626,7 +708,8 @@ export default function ContentDetailPage() {
 
   const handleLocMouseEnter = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect()
-    setLocPopoverPos({ top: rect.bottom + 8, left: rect.left })
+    // Right align the popover with the right edge of the trigger
+    setLocPopoverPos({ top: rect.bottom + 8, right: window.innerWidth - rect.right })
     setShowLocHover(true)
   }
 
@@ -649,7 +732,7 @@ export default function ContentDetailPage() {
                 Why does this recommendation matter to you
               </p>
               <p className="text-[12px] text-[#555] leading-[18px] mb-3">
-                We analyzed your reports and found these gaps
+                We analyzed and found these gaps
               </p>
               <ul className="flex flex-col gap-2.5">
                 {rec.whyItWorks.map((pt, i) => (
@@ -675,7 +758,12 @@ export default function ContentDetailPage() {
           <div className="px-5 pt-4 pb-2">
             <div className="flex items-start justify-between gap-4">
               <p className="text-[16px] text-[#212121] leading-[24px] font-normal">
-                How to fix this
+                Fix this gap
+              </p>
+            </div>
+            <div className="mt-5 flex items-start justify-between gap-4">
+              <p className="text-[16px] text-[#212121] leading-[24px] tracking-[-0.32px] font-normal">
+                {rec.title}
               </p>
               {locationCount > 0 && (
                 <div 
@@ -685,25 +773,31 @@ export default function ContentDetailPage() {
                 >
                   <PinIcon />
                   <span 
-                    className={`text-[12px] text-[#555] leading-[normal] whitespace-nowrap ${locationCount > 1 ? 'border-b border-dashed border-[#888]' : ''}`}
+                    className="text-[12px] text-[#555] leading-[normal] whitespace-nowrap"
                   >
                     {locationCount === 1 ? firstLocation : `${locationCount} locations`}
                   </span>
                 </div>
               )}
             </div>
-            <div className="mt-5">
-              <p className="text-[16px] text-[#212121] leading-[24px] tracking-[-0.32px] font-normal">
-                {rec.title}
-              </p>
-            </div>
           </div>
 
           {/* Body: impact + blog card */}
           <div className="px-5 pb-5 flex flex-col gap-3">
-            <p className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">
-              {rec.description}
-            </p>
+            <div className="flex flex-col gap-2">
+              <p className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">
+                {rec.description}
+              </p>
+              <p className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">
+                You’re missing high-intent traffic for property appraisals in Dubbo.
+              </p>
+              <p className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">
+                A dedicated page can help you capture leads and improve search visibility. We’ve created a page draft based on what’s working for competitors.
+              </p>
+              <p className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">
+                Review and publish to start capturing appraisal leads.
+              </p>
+            </div>
             <BlogPreviewBox
               rec={rec}
               aeoScore={98}
@@ -719,8 +813,8 @@ export default function ContentDetailPage() {
         {/* ═══ CARD 4: What to do next (stepper) ══════════════════════════ */}
         <div className="bg-white border border-[#eaeaea] rounded-lg">
           <div className="px-5 pt-5 pb-3">
-            <p className="text-[16px] text-[#212121] leading-[24px] font-normal">What to do next</p>
-            <p className="text-[12px] text-[#555] leading-[18px] mt-2 font-normal">Step by step guide on what you need to do next</p>
+            <p className="text-[16px] text-[#212121] leading-[24px] font-normal mb-1">What to do next</p>
+            <p className="text-[12px] text-[#555] leading-[18px] font-normal">Step by step guide on what you need to do next</p>
           </div>
 
           {/* Steps */}
@@ -801,17 +895,20 @@ export default function ContentDetailPage() {
         {topComp && (
           <div className="bg-white border border-[#eaeaea] rounded-lg overflow-hidden">
             {/* Card header */}
-            <div className="px-5 pt-4 pb-2">
-              <p className="text-[16px] text-[#555] leading-[24px] tracking-[-0.32px] font-normal">
-                {`What top competitor blog is cited by AI for "${themePrompt}"`}
-              </p>
-              <p className="text-[12px] text-[#555] leading-[18px] mt-0.5 overflow-hidden text-ellipsis whitespace-nowrap">
-                Analyze why competitors blog is getting cited instead of you
-              </p>
+            <div className="px-5 pt-4 pb-2 flex items-start justify-between gap-4">
+              <div className="flex flex-col">
+                <p className="text-[16px] text-[#555] leading-[24px] tracking-[-0.32px] font-normal">
+                  {`What top competitor blog is cited by AI for "${themePrompt}"`}
+                </p>
+                <p className="text-[12px] text-[#555] leading-[18px] mt-0.5 overflow-hidden text-ellipsis whitespace-nowrap">
+                  Analyze why competitors blog is getting cited instead of you
+                </p>
+              </div>
+              <AeoScoreDrawer rec={rec} />
             </div>
 
             {/* Competitor preview row */}
-            <div className="px-6 py-3">
+            <div className="px-6 py-3 pb-5">
               <div className="bg-[#fafafa] rounded-lg p-5 flex items-start justify-between gap-4">
                 <div className="flex flex-col gap-1 flex-1 min-w-0">
                   {/* Competitor name + logo */}
@@ -841,11 +938,6 @@ export default function ContentDetailPage() {
                 <AeoScoreBox score={rec.aeoScore?.competitor ?? 85} />
               </div>
             </div>
-
-            {/* AEO comparison table */}
-            <div className="px-6 pb-5">
-              <AeoComparisonTable rec={rec} />
-            </div>
           </div>
         )}
 
@@ -857,7 +949,7 @@ export default function ContentDetailPage() {
       {showLocHover && locationCount > 1 && createPortal(
         <div
           className="fixed z-[9999] bg-white rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.12)] border border-[#eaeaea] w-56 py-2"
-          style={{ top: locPopoverPos.top, left: locPopoverPos.left }}
+          style={{ top: locPopoverPos.top, right: locPopoverPos.right }}
           onMouseEnter={() => setShowLocHover(true)}
           onMouseLeave={() => setShowLocHover(false)}
         >

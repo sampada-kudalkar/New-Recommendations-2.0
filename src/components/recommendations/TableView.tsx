@@ -98,7 +98,7 @@ function PerformanceBar({ rec, metrics }: { rec: Recommendation; metrics: Busine
   return (
     <div className="flex flex-col gap-1.5 min-w-0">
       {/* Single track with 2 marker dots */}
-      <div className="relative h-2 bg-[#eaeaea] rounded-[2px] mt-2 overflow-hidden flex">
+      <div className="relative h-3 bg-[#eaeaea] rounded-[4px] mt-2 overflow-hidden flex">
         {/* blue fill up to your score */}
         <div
           className="h-full bg-[#1976d2]"
