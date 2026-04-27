@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist --repo $(git remote get-url rec)"
+    "deploy": "gh-pages -d dist --repo $(git remote get-url origin)"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

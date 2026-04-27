@@ -62,16 +62,10 @@ interface BlogPreviewModalProps {
   onClose: () => void
   aeoScore: number
   subScores?: AeoSubScore[]
-  title: string
-  intro: string
-  blogUrl?: string
   onAccept?: () => void
 }
 
-const HERO_IMG   = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=900&auto=format&fit=crop&q=80'
-const SECTION_IMG = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900&auto=format&fit=crop&q=80'
-
-function BlogPreviewModal({ open, onClose, aeoScore, subScores, title, intro, onAccept }: BlogPreviewModalProps) {
+function BlogPreviewModal({ open, onClose, aeoScore, subScores, onAccept }: BlogPreviewModalProps) {
   if (!open) return null
   const fillPct = Math.min(aeoScore, 100)
 
@@ -384,11 +378,9 @@ interface BlogPreviewBoxProps {
   body?: string
   /** Override thumbnail image src */
   imageUrl?: string
-  /** Override "View blog" href */
-  blogUrl?: string
   onOpenClick?: () => void
 }
-function BlogPreviewBox({ rec, aeoScore, title, body, imageUrl, blogUrl, onOpenClick }: BlogPreviewBoxProps) {
+function BlogPreviewBox({ rec, aeoScore, title, body, imageUrl, onOpenClick }: BlogPreviewBoxProps) {
   const displayTitle = title ?? rec.title
   const rawBody      = body ?? rec.description
   const displayBody  = rawBody.length > 120 ? rawBody.slice(0, 120) + '...' : rawBody
@@ -718,7 +710,6 @@ export default function ContentDetailPage() {
               title="Dubbo Suburb Service Pages for Sales & Rentals"
               body="Finding the right real estate support starts with choosing a team that understands your suburb."
               imageUrl={`${BASE}assets/image-1.png`}
-              blogUrl={rec.targetPages?.[0]}
               onOpenClick={() => setShowBlogModal(true)}
             />
           </div>
@@ -890,9 +881,6 @@ export default function ContentDetailPage() {
         onClose={() => setShowBlogModal(false)}
         aeoScore={98}
         subScores={rec.aeoScore?.subScores}
-        title="Dubbo Suburb Service Pages for Sales & Rentals"
-        intro="Finding the right real estate support starts with choosing a team that understands your suburb."
-        blogUrl={rec.targetPages?.[0]}
         onAccept={() => {
           acceptRec(rec.id, 'self')
           setShowBlogModal(false)
