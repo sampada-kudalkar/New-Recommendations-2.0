@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import type { Recommendation, RecCategory } from '../../types'
 import type { BusinessMetrics } from '../../types'
 import { getLocationsForRec } from '../../data/locationsData'
+import { getDisplayScore } from '../../data/zeroScoreReplacements'
 import {
   Table,
   TableHeader,
@@ -12,7 +13,6 @@ import {
   TableHead,
   TableCell,
 } from '../ui/table'
-import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 import { CircleX, CircleCheck } from 'lucide-react'
@@ -76,8 +76,7 @@ function PinIcon() {
 
 // ── Performance bar ───────────────────────────────────────────────────────────
 function PerformanceBar({ rec, metrics }: { rec: Recommendation; metrics: BusinessMetrics }) {
-  const meta  = CATEGORY_METRIC[rec.category]
-  // Use rec-specific accurate score when available, fall back to global metrics
+  const meta = CATEGORY_METRIC[rec.category]
   const current = rec.youScore !== undefined ? rec.youScore : (meta ? (metrics[meta.key] as number) : 0)
   const compPct = rec.compScore !== undefined
     ? rec.compScore
@@ -89,38 +88,22 @@ function PerformanceBar({ rec, metrics }: { rec: Recommendation; metrics: Busine
       })()
 
   const label = meta?.label ?? 'Score'
-  const isNone = current === 0
-
-  // bar widths — your score vs competitor
-  const yourW = Math.min(current, 100)
-  const compW = Math.min(compPct, 100)
+  const displayScore = getDisplayScore(rec.id, current)
 
   return (
-    <div className="flex flex-col gap-1.5 min-w-0">
-      {/* Single track with 2 marker dots */}
-      <div className="relative h-3 bg-[#eaeaea] rounded-[4px] mt-2 overflow-hidden flex">
-        {/* blue fill up to your score */}
-        <div
-          className="h-full bg-[#1976d2]"
-          style={{ width: `${yourW}%` }}
-        />
-        {/* red fill from your score to competitor */}
-        {compW > yourW && (
-          <div
-            className="h-full bg-[#ff9e80]"
-            style={{ width: `${compW - yourW}%` }}
-          />
-        )}
-      </div>
-      {/* Labels */}
-      <div className="flex flex-col mt-1">
-        <span className="text-[12px] text-[#212121] leading-[20px] whitespace-nowrap font-normal">
-          Your {label} : {isNone ? '0%' : `${current.toFixed(1)}%`}
+    <div className="flex flex-col gap-0.5 min-w-0">
+      <div className="flex items-center gap-1">
+        <span className="text-[14px] text-[#212121] font-normal leading-[20px] whitespace-nowrap">
+          {displayScore.toFixed(1)}%
         </span>
-        <span className="text-[12px] text-[#555555] leading-[18px] whitespace-nowrap font-normal">
-          Industry average : {compPct.toFixed(0)}%
+        <span className="text-[14px] text-[#bdbdbd] font-normal leading-[20px]">|</span>
+        <span className="text-[14px] text-[#212121] font-normal leading-[20px] whitespace-nowrap">
+          {compPct.toFixed(1)}%
         </span>
       </div>
+      <span className="text-[12px] text-[#757575] font-normal leading-[16px]">
+        {label}
+      </span>
     </div>
   )
 }
@@ -233,6 +216,8 @@ export default function TableView({ recommendations, metrics }: Props) {
     )
   }
 
+  const rowData = sorted
+
   return (
     <TooltipProvider>
       {/* 24px left/right padding wrapping the full table */}
@@ -240,10 +225,10 @@ export default function TableView({ recommendations, metrics }: Props) {
         <Table className="w-full border-collapse" style={{ tableLayout: 'fixed' }}>
           {/* ── Column widths ─────────────────────────────────────── */}
           <colgroup>
-            <col style={{ width: '24%' }} />
+            <col style={{ width: '18%' }} />
             <col style={{ width: '12%' }} />
-            <col style={{ width: '32%' }} />
-            <col style={{ width: '20%' }} />
+            <col style={{ width: '40%' }} />
+            <col style={{ width: '18%' }} />
             <col style={{ width: '12%' }} />
           </colgroup>
 
@@ -253,7 +238,7 @@ export default function TableView({ recommendations, metrics }: Props) {
               <SortableHeader label="Recommendations"    colKey="recommendation" className="py-3" />
               <SortableHeader label="Type"               colKey="type" className="py-3" />
               <SortableHeader label="Impact"             colKey="impact" className="py-3" />
-              <SortableHeader label="Current performance" colKey="performance" className="py-3" />
+              <SortableHeader label="You vs competitor" colKey="performance" className="py-3" />
               {/* Locations header — left-aligned */}
               <TableHead
                 className="text-left py-3 pr-6 cursor-pointer select-none"
@@ -271,7 +256,7 @@ export default function TableView({ recommendations, metrics }: Props) {
 
           {/* ── Rows ─────────────────────────────────────────────── */}
           <TableBody>
-            {sorted.map(rec => {
+            {rowData.map(rec => {
               const isHovered = hoveredRow === rec.id
               const locationCount = rec.locations ?? 1
               return (
@@ -292,9 +277,9 @@ export default function TableView({ recommendations, metrics }: Props) {
 
                   {/* Col 2 — Type */}
                   <TableCell className="py-4 align-top">
-                    <Badge variant="outline" className="font-normal text-[#555] whitespace-nowrap">
+                    <span className="text-[14px] text-[#212121] font-normal leading-[20px] whitespace-nowrap">
                       {rec.category}
-                    </Badge>
+                    </span>
                   </TableCell>
 
                   {/* Col 3 — Impact */}
@@ -323,7 +308,7 @@ export default function TableView({ recommendations, metrics }: Props) {
                     </div>
                   </TableCell>
 
-                  {/* Col 4 — Current performance */}
+                  {/* Col 4 — You vs competitor */}
                   <TableCell className="py-4 align-top">
                     <div className="pr-4">
                       <PerformanceBar rec={rec} metrics={metrics} />

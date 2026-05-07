@@ -5,6 +5,7 @@ import type { BusinessMetrics } from '../../types'
 import { nsaThemesConfig } from '../../data/nsaThemesConfig'
 import { getLocationsForRec } from '../../data/locationsData'
 import { useAppStore } from '../../store/useAppStore'
+import { getDisplayScore } from '../../data/zeroScoreReplacements'
 
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -35,7 +36,8 @@ function ScoreCard({ rec, metrics }: { rec: Recommendation; metrics: BusinessMet
   const themeConfig = nsaThemesConfig[rec.themeId]
   const label       = themeConfig?.label ?? rec.category
   const { label: metricLabel, key: metricsKey } = getMetricForCategory(rec.category)
-  const current = rec.youScore !== undefined ? rec.youScore : metrics[metricsKey]
+  const rawScore = rec.youScore !== undefined ? rec.youScore : metrics[metricsKey]
+  const current = getDisplayScore(rec.id, rawScore)
   const compPct = rec.compScore !== undefined
     ? rec.compScore
     : (() => {
@@ -57,13 +59,13 @@ function ScoreCard({ rec, metrics }: { rec: Recommendation; metrics: BusinessMet
 
       <div className="relative mt-1" style={{ height: 36 }}>
         <p className="absolute text-[28px] font-normal text-[#212121] leading-none" style={{ left: 0 }}>
-          {current.toFixed(0)}%
+          {current.toFixed(1)}%
         </p>
         <p
           className="absolute text-[28px] font-normal text-[#212121] leading-none"
           style={{ left: `${compW}%` }}
         >
-          {compPct.toFixed(0)}%
+          {compPct.toFixed(1)}%
         </p>
       </div>
 
@@ -99,6 +101,8 @@ export default function GenericDetailPage() {
   const id  = window.location.pathname.split('/').pop()
   const rec = recommendations.find(r => r.id === id)
 
+  const [activeTab, setActiveTab] = useState<'recommendation' | 'evidence'>('recommendation')
+  const [llmTab, setLlmTab] = useState('ChatGPT')
   const [showLocHover, setShowLocHover] = useState(false)
   const [locPopoverPos, setLocPopoverPos] = useState({ top: 0, left: 0 })
 
@@ -116,8 +120,36 @@ export default function GenericDetailPage() {
     setShowLocHover(true)
   }
 
+  const PROMPT_ROWS = [
+    { date: 'Jan 10, 2026', location: 'Atlanta, GA',  mentioned: true,  position: 1, responseExcerpt: 'Here are some top-rated results i...' },
+    { date: 'Jan 10, 2026', location: 'Dallas, TX',   mentioned: false, position: null, responseExcerpt: 'The best options in Dallas include...' },
+    { date: 'Jan 9, 2026',  location: 'Chicago, IL',  mentioned: true,  position: 2, responseExcerpt: 'Top providers in Chicago include...' },
+    { date: 'Jan 8, 2026',  location: 'Austin, TX',   mentioned: true,  position: 1, responseExcerpt: 'Looking in Austin? Here are the top...' },
+  ]
+  const LLM_TABS = ['ChatGPT', 'Gemini', 'Perplexity', 'Google AI Mode', 'Google AI Overviews', 'All sites']
+  const themePrompt = nsaThemesConfig[rec.themeId]?.prompts?.[0] ?? rec.category
+
   return (
-    <div className="flex-1 overflow-y-auto bg-white">
+    <div className="flex-1 overflow-y-auto bg-white flex flex-col">
+      {/* ── Tab bar ─────────────────────────────────────────────────────── */}
+      <div className="border-b border-[#eaeaea] px-6 flex gap-6 bg-white flex-shrink-0 sticky top-0 z-10">
+        {(['recommendation', 'evidence'] as const).map(tab => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`py-3 text-[14px] font-normal border-b-2 -mb-px transition-colors ${
+              activeTab === tab
+                ? 'border-[#1976d2] text-[#212121]'
+                : 'border-transparent text-[#555] hover:text-[#212121]'
+            }`}
+          >
+            {tab === 'recommendation' ? 'Recommendation' : 'Evidence'}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Recommendation tab ──────────────────────────────────────────── */}
+      {activeTab === 'recommendation' && (
       <div className="px-6 py-5 flex flex-col gap-4">
 
         {/* ═══ ROW 1: Score card (left) + Why it matters (right) ═══════════ */}
@@ -177,7 +209,7 @@ export default function GenericDetailPage() {
           </div>
           <div className="px-5 pb-5">
             <p className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">
-              {rec.description}
+              {rec.expectedImpact ?? rec.description}
             </p>
           </div>
         </div>
@@ -236,6 +268,91 @@ export default function GenericDetailPage() {
 
         <div className="h-4 flex-shrink-0" />
       </div>
+      )}
+
+      {/* ── Evidence tab ────────────────────────────────────────────────── */}
+      {activeTab === 'evidence' && (
+      <div className="px-6 py-5 flex flex-col gap-4">
+
+        {/* ═══ Prompt Execution — How did AI sites respond ═════════════════ */}
+        <div className="bg-white border border-[#eaeaea] rounded-lg overflow-hidden">
+          <div className="px-5 pt-4 pb-3">
+            <p className="text-[16px] text-[#212121] leading-[24px] font-normal">
+              How did AI sites respond to{' '}
+              <span className="text-[#1976d2]">{themePrompt}</span>
+            </p>
+            <p className="text-[12px] text-[#888] leading-[18px] mt-0.5">
+              To generate this recommendation, we ran these prompts across LLMs. Here are the responses each AI site returned.
+            </p>
+          </div>
+
+          {/* LLM sub-tabs */}
+          <div className="border-b border-[#eaeaea] px-5 flex gap-5 overflow-x-auto">
+            {LLM_TABS.map(tab => (
+              <button
+                key={tab}
+                onClick={() => setLlmTab(tab)}
+                className={`py-2.5 text-[13px] font-normal border-b-2 -mb-px whitespace-nowrap transition-colors ${
+                  llmTab === tab
+                    ? 'border-[#1976d2] text-[#212121]'
+                    : 'border-transparent text-[#555] hover:text-[#212121]'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          {/* Table header */}
+          <div className="px-5 pt-3 pb-1 grid grid-cols-[120px_120px_80px_80px_1fr_1fr_100px] gap-3 text-[11px] text-[#888] font-medium tracking-[0.3px] uppercase">
+            <span>Date</span>
+            <span>Location</span>
+            <span>Mention</span>
+            <span>Position</span>
+            <span>All mentions</span>
+            <span>Response</span>
+            <span>Citations</span>
+          </div>
+
+          {/* Table rows */}
+          <div className="divide-y divide-[#eaeaea]">
+            {PROMPT_ROWS.map((row, i) => (
+              <div key={i} className="px-5 py-3 grid grid-cols-[120px_120px_80px_80px_1fr_1fr_100px] gap-3 items-center">
+                <span className="text-[13px] text-[#212121]">{row.date}</span>
+                <span className="text-[13px] text-[#212121]">{row.location}</span>
+                <span>
+                  {row.mentioned
+                    ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4caf50" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e53935" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                  }
+                </span>
+                <span className="text-[13px] text-[#212121]">
+                  {row.mentioned && row.position != null ? `${row.position} +1` : '—'}
+                </span>
+                <div className="flex items-center gap-1">
+                  {['you', 'C1', 'C2'].map((m, mi) => (
+                    <span key={mi} className="w-5 h-5 rounded-full bg-[#e3f2fd] flex items-center justify-center text-[9px] text-[#1976d2] font-medium flex-shrink-0">
+                      {m[0]}
+                    </span>
+                  ))}
+                  <span className="text-[12px] text-[#888] ml-0.5">+20</span>
+                </div>
+                <span className="text-[12px] text-[#555] truncate">{row.responseExcerpt}</span>
+                <div className="flex items-center gap-1">
+                  {['you', 'C1', 'C2'].map((c, ci) => (
+                    <span key={ci} className="w-5 h-5 rounded-full bg-[#e3f2fd] flex items-center justify-center text-[9px] text-[#1976d2] font-medium flex-shrink-0">
+                      {c[0]}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="h-4 flex-shrink-0" />
+      </div>
+      )}
 
       {/* Location hover portal (kept for future use) */}
       {showLocHover && locationCount > 1 && createPortal(
