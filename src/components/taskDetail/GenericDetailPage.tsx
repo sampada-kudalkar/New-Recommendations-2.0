@@ -121,10 +121,10 @@ export default function GenericDetailPage() {
   }
 
   const PROMPT_ROWS = [
-    { date: 'Jan 10, 2026', location: 'Atlanta, GA',  mentioned: true,  position: 1, responseExcerpt: 'Here are some top-rated results i...' },
-    { date: 'Jan 10, 2026', location: 'Dallas, TX',   mentioned: false, position: null, responseExcerpt: 'The best options in Dallas include...' },
-    { date: 'Jan 9, 2026',  location: 'Chicago, IL',  mentioned: true,  position: 2, responseExcerpt: 'Top providers in Chicago include...' },
-    { date: 'Jan 8, 2026',  location: 'Austin, TX',   mentioned: true,  position: 1, responseExcerpt: 'Looking in Austin? Here are the top...' },
+    { date: 'Jan 10, 2026', location: 'Dubbo, NSW',    mentioned: true,  position: 1, responseExcerpt: 'Here are the top-rated real estate agencies in Dubbo recommended for buyers and sellers...' },
+    { date: 'Jan 10, 2026', location: 'Orange, NSW',   mentioned: false, position: null, responseExcerpt: 'The best property agencies in Orange NSW include several highly regarded local firms...' },
+    { date: 'Jan 9, 2026',  location: 'Bathurst, NSW', mentioned: true,  position: 2, responseExcerpt: 'Top real estate agents in Bathurst are active across multiple suburbs offering appraisals...' },
+    { date: 'Jan 8, 2026',  location: 'Parkes, NSW',   mentioned: true,  position: 1, responseExcerpt: 'Looking for a property appraisal in Parkes? Several well-reviewed local agencies offer...' },
   ]
   const LLM_TABS = ['ChatGPT', 'Gemini', 'Perplexity', 'Google AI Mode', 'Google AI Overviews', 'All sites']
   const themePrompt = nsaThemesConfig[rec.themeId]?.prompts?.[0] ?? rec.category
@@ -132,7 +132,7 @@ export default function GenericDetailPage() {
   return (
     <div className="flex-1 overflow-y-auto bg-white flex flex-col">
       {/* ── Tab bar ─────────────────────────────────────────────────────── */}
-      <div className="border-b border-[#eaeaea] px-6 flex gap-6 bg-white flex-shrink-0 sticky top-0 z-10">
+      <div className="border-b border-[#eaeaea] px-6 flex gap-6 bg-white flex-shrink-0 sticky top-0 z-30">
         {(['recommendation', 'evidence'] as const).map(tab => (
           <button
             key={tab}

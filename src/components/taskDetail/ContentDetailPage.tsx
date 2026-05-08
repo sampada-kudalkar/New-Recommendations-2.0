@@ -474,6 +474,36 @@ function SiteLogos({ count, startIdx = 0 }: { count: number; startIdx?: number }
   )
 }
 
+// ── FAQ preview box ───────────────────────────────────────────────────────────
+function FAQPreviewBox({
+  rec, aeoScore, faqCount = 10,
+}: { rec: Recommendation; aeoScore: number; faqCount?: number }) {
+  return (
+    <div className="flex items-start gap-3 bg-[#f9f5ff] rounded-lg p-3">
+      <div className="flex flex-1 gap-3 items-start min-w-0">
+        <div className="flex-1 min-w-0 flex flex-col gap-0.5 justify-center">
+          <div className="flex items-center gap-1">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="#6834B7" className="flex-shrink-0">
+              <path d="M12 2l1.8 7.2L21 12l-7.2 1.8L12 21l-1.8-7.2L3 12l7.2-1.8L12 2z"/>
+            </svg>
+            <span className="text-[12px] leading-[18px] tracking-[-0.24px]" style={{ color: '#6834B7' }}>
+              FAQ Draft Ready
+            </span>
+          </div>
+          <p className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px] font-normal">
+            {rec.title}
+          </p>
+          <p className="text-[14px] text-[#555] leading-[20px] tracking-[-0.28px]">
+            {faqCount} FAQs generated for this theme{' '}
+            <span className="font-normal text-[#1976d2] hover:underline cursor-pointer">View FAQs</span>
+          </p>
+        </div>
+      </div>
+      <AeoScoreBox score={aeoScore} />
+    </div>
+  )
+}
+
 // ── Category → metric mapping ─────────────────────────────────────────────────
 type MetricsKey = 'citationShare' | 'visibility' | 'sentiment'
 
@@ -603,17 +633,17 @@ export default function ContentDetailPage() {
   }
 
   const PROMPT_ROWS = [
-    { date: 'Jan 10, 2026', location: 'Atlanta, GA',  mentioned: true,  position: 1, positionDelta: 1,    mentionCount: 20, citationCount: 3, responseExcerpt: 'Here are some top-rated dental clinics and Invisalign providers in Atlanta that consistently appear in AI-generated recommendations across multiple platforms.' },
-    { date: 'Jan 10, 2026', location: 'Dallas, TX',   mentioned: false, position: null, positionDelta: null, mentionCount: 0,  citationCount: 2, responseExcerpt: 'The best dental clinics in Dallas include several highly rated practices offering Invisalign treatment, cosmetic dentistry, and family dental care services.' },
-    { date: 'Jan 9, 2026',  location: 'Chicago, IL',  mentioned: true,  position: 2, positionDelta: 3,    mentionCount: 18, citationCount: 3, responseExcerpt: 'Top Invisalign providers in Chicago are spread across multiple neighborhoods, with many offering free consultations and flexible payment plans for new patients.' },
-    { date: 'Jan 8, 2026',  location: 'Austin, TX',   mentioned: true,  position: 1, positionDelta: 2,    mentionCount: 20, citationCount: 2, responseExcerpt: 'Looking for Invisalign in Austin? Several well-reviewed orthodontic practices and dental clinics offer clear aligner treatment with experienced specialists.' },
+    { date: 'Jan 10, 2026', location: 'Dubbo, NSW',    mentioned: true,  position: 1, positionDelta: 1,    mentionCount: 20, citationCount: 3, responseExcerpt: 'Here are the top-rated real estate agencies in Dubbo that consistently appear in AI-generated recommendations for buyers and sellers looking to transact in the local property market.' },
+    { date: 'Jan 10, 2026', location: 'Orange, NSW',   mentioned: false, position: null, positionDelta: null, mentionCount: 0,  citationCount: 2, responseExcerpt: 'The leading property agencies in Orange NSW include several highly regarded firms offering residential sales, property management, and free market appraisals for homeowners.' },
+    { date: 'Jan 9, 2026',  location: 'Bathurst, NSW', mentioned: true,  position: 2, positionDelta: 3,    mentionCount: 18, citationCount: 3, responseExcerpt: 'Top real estate agents in Bathurst are active across multiple suburbs, with many offering complimentary property appraisals and tailored marketing plans for vendors.' },
+    { date: 'Jan 8, 2026',  location: 'Parkes, NSW',   mentioned: true,  position: 1, positionDelta: 2,    mentionCount: 20, citationCount: 2, responseExcerpt: 'Looking for a property appraisal in Parkes? Several well-reviewed agencies offer no-obligation valuations with experienced local agents who understand the regional NSW market.' },
   ]
   const LLM_TABS = ['ChatGPT', 'Gemini', 'Perplexity', 'Google AI Mode', 'Google AI Overviews']
 
   return (
     <div className="flex-1 overflow-y-auto bg-white flex flex-col">
       {/* ── Tab bar ─────────────────────────────────────────────────────── */}
-      <div className="border-b border-[#eaeaea] px-6 flex gap-6 bg-white flex-shrink-0 sticky top-0 z-10">
+      <div className="border-b border-[#eaeaea] px-6 flex gap-6 bg-white flex-shrink-0 sticky top-0 z-30">
         {(['recommendation', 'evidence'] as const).map(tab => (
           <button
             key={tab}
@@ -708,14 +738,18 @@ export default function ContentDetailPage() {
                 )}
               </p>
             </div>
-            <BlogPreviewBox
-              rec={rec}
-              aeoScore={98}
-              title="Dubbo Suburb Service Pages for Sales & Rentals"
-              body="Finding the right real estate support starts with choosing a team that understands your suburb."
-              imageUrl={`${BASE}assets/image-1.png`}
-              onOpenClick={() => setShowBlogModal(true)}
-            />
+            {rec.category === 'FAQ' ? (
+              <FAQPreviewBox rec={rec} aeoScore={98} faqCount={10} />
+            ) : (
+              <BlogPreviewBox
+                rec={rec}
+                aeoScore={98}
+                title="Dubbo Suburb Service Pages for Sales & Rentals"
+                body="Finding the right real estate support starts with choosing a team that understands your suburb."
+                imageUrl={`${BASE}assets/image-1.png`}
+                onOpenClick={() => setShowBlogModal(true)}
+              />
+            )}
           </div>
         </div>
 
@@ -729,25 +763,49 @@ export default function ContentDetailPage() {
 
           {/* Steps */}
           <div className="pb-2">
-            {[
-              {
-                id: 'step-1',
-                label: 'Review your Search AI-generated blog.',
-                description: `Birdeye wrote a full Invisalign blog for your practice, optimised for Austin searches. Read through the draft. Change any details, prices, or tone to match your voice. Make minor tweaks to the blog own as user-created content gets better results than the AI-generated content.`
-              },
-              {
-                id: 'step-2',
-                label: 'Publish to your website.',
-                description: 'Publish to your website to boost Search AI score and assign it to a team member.'
-              },
-              {
-                id: 'step-3',
-                label: 'Mark it as complete after publishing.',
-                description: 'Mark this task as complete to observe your progress in Search AI score.'
-              }
-            ].map((step, idx, arr) => {
+            {(rec.category === 'FAQ'
+              ? [
+                  {
+                    id: 'step-1',
+                    label: 'Review your Search AI-generated FAQs.',
+                    description: `Birdeye wrote 10 FAQs for your ${themeConfig?.label ?? rec.category} practice, optimised for ${firstLocation} searches. Read through the draft. Change any details, prices, or tone to match your voice. Make minor tweaks to the FAQs as user-created content gets better results than AI-generated content.`,
+                    cta: 'Review FAQs',
+                  },
+                  {
+                    id: 'step-2',
+                    label: 'Publish to your website.',
+                    labelSuffix: 'on these pages',
+                    description: null,
+                    urls: rec.targetPages ?? [],
+                  },
+                  {
+                    id: 'step-3',
+                    label: 'Mark as complete after publishing the FAQs.',
+                    description: 'Mark this task as complete to observe your progress in Search AI score.',
+                  },
+                ]
+              : [
+                  {
+                    id: 'step-1',
+                    label: 'Review your Search AI-generated blog.',
+                    description: `Birdeye wrote a full blog post for your practice, optimised for Dubbo searches. Read through the draft. Change any details, prices, or tone to match your voice. Make minor tweaks to the post as user-created content gets better results than AI-generated content.`,
+                    cta: 'Review Blog',
+                  },
+                  {
+                    id: 'step-2',
+                    label: 'Publish to your website.',
+                    description: 'Publish to your website to boost Search AI score and assign it to a team member.',
+                  },
+                  {
+                    id: 'step-3',
+                    label: 'Mark it as complete after publishing.',
+                    description: 'Mark this task as complete to observe your progress in Search AI score.',
+                  },
+                ]
+            ).map((step, idx, arr) => {
               const isLast  = idx === arr.length - 1
               const isFirst = idx === 0
+              const urls = 'urls' in step ? (step.urls as string[]) : []
               return (
                 <div key={step.id} className="flex gap-3 items-stretch px-5">
                   <div className="flex flex-col items-center flex-shrink-0">
@@ -757,16 +815,38 @@ export default function ContentDetailPage() {
                     {!isLast && <div className="w-px flex-1 bg-[#eaeaea] mt-1" />}
                   </div>
                   <div className={`flex flex-col flex-1 min-w-0 pt-0.5 ${!isLast ? 'pb-5' : 'pb-1'}`}>
-                    <p className="text-[14px] text-[#212121] leading-[22px]">{step.label}</p>
-                    <p className="text-[13px] text-[#555] leading-[20px] mt-0.5">{step.description}</p>
-                    {isFirst && (
+                    <p className="text-[14px] text-[#212121] leading-[22px]">
+                      {step.label}
+                      {'labelSuffix' in step && step.labelSuffix && (
+                        <span style={{ color: '#e53935' }}> {step.labelSuffix}</span>
+                      )}
+                    </p>
+                    {step.description && (
+                      <p className="text-[13px] text-[#555] leading-[20px] mt-0.5">{step.description}</p>
+                    )}
+                    {urls.length > 0 && (
+                      <div className="flex flex-col gap-1 mt-1">
+                        {urls.map(url => (
+                          <a
+                            key={url}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[13px] text-[#1976d2] hover:underline leading-[20px] break-all"
+                          >
+                            {url}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                    {isFirst && 'cta' in step && step.cta && (
                       <div className="mt-3">
                         <button
-                          onClick={() => setShowBlogModal(true)}
+                          onClick={() => rec.category !== 'FAQ' && setShowBlogModal(true)}
                           style={{ height: 36, padding: '8px 12px', border: '1px solid #e5e9f0', borderRadius: 4, background: 'white', fontSize: 14, lineHeight: '20px', letterSpacing: '-0.28px', color: '#212121', cursor: 'pointer', fontFamily: 'Roboto, sans-serif', fontWeight: 400 }}
                           className="hover:bg-[#f5f5f5] transition-colors whitespace-nowrap"
                         >
-                          Review Blog
+                          {step.cta}
                         </button>
                       </div>
                     )}
@@ -849,7 +929,7 @@ export default function ContentDetailPage() {
                       rel="noopener noreferrer"
                       className="text-[14px] text-[#1976d2] hover:underline leading-[20px] tracking-[-0.28px] truncate block"
                     >
-                      {comp.pageUrl ? `${comp.name} | Best dentist for Invisalign` : comp.name}
+                      {comp.pageUrl ? `${comp.name} | Leading property agency in Dubbo` : comp.name}
                     </a>
                     {/* Excerpt */}
                     <p className="text-[12px] text-[#555555] leading-[20px] line-clamp-1">

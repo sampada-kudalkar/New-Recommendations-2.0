@@ -74,7 +74,7 @@ export default function AssignModal({ recId, onClose }: AssignModalProps) {
             <label className="block text-[14px] text-text-secondary mb-1.5">Team member email</label>
             <input
               type="email"
-              placeholder="sarah@smilebrightdental.com"
+              placeholder="sarah@raineandhorne.com.au"
               value={teamEmail}
               onChange={e => setTeamEmail(e.target.value)}
               className="w-full border border-border-primary rounded-sm px-3 py-2 text-[14px] text-text-primary focus:outline-none focus:border-primary"

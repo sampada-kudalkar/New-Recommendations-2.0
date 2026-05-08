@@ -24,7 +24,7 @@ export default function TaskDetailPage() {
     )
   }
 
-  if (rec.category === 'Content') {
+  if (rec.category === 'Content' || rec.category === 'FAQ') {
     return <ContentDetailPage />
   }
   return <GenericDetailPage />

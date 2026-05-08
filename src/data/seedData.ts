@@ -481,156 +481,6 @@ export const seedRecommendations: Recommendation[] = [
     ]),
   },
 
-  // 4 — 69de01cb9c10756b6b6132a9
-  {
-    id: '69de01cb9c10756b6b6132a9',
-    title: 'Claim LocalSearch and API Profiles for Dubbo Appraisals',
-    description:
-      'Your business lacks consistent presence on key local directories where Dubbo residents search for property appraisals. LocalSearch and Australian Property Institute (API) profiles are missing or incomplete, limiting your visibility in local searches and AI-powered answers.',
-    category: 'Local SEO',
-    impactLabel: 'High impact',
-    effort: 'Quick win',
-    themeId: 'property-appraisals',
-    createdAt: CREATED_AT,
-    locationNames: LOCATION_NAMES,
-    locations: 5, // niche: two specific platforms
-    tags: ['Local SEO', 'Quick Win'],
-    status: 'pending',
-    assignedTo: null,
-    assignChoice: null,
-    acceptedAt: null,
-    acceptedBy: null,
-    completedAt: null,
-    shortAction: 'Claim and optimize local directory profiles',
-    youScore: 0,
-    compScore: 75,
-    expectedImpact:
-      'Increased visibility in local search results and directory listings will drive more direct phone calls and appraisal inquiries. Consistent business information across platforms strengthens Google\'s confidence in your location data.',
-    keyInsights: [
-      'LocalSearch and API are trusted sources that Google uses to verify business information',
-      'Competitors actively maintain these profiles and highlight free appraisal services prominently',
-    ],
-    swotDrivers: [
-      'Opportunity: Untapped local directory channels for lead generation',
-      'Threat: Competitors dominating directory listings for appraisal searches',
-    ],
-    competitorsInsight: [
-      'Leading competitors use directory profiles as additional lead generation channels beyond their websites',
-      'Successful agents emphasize \'free\' and \'no-obligation\' messaging consistently across all platforms',
-    ],
-    targetPages: ['https://raineandhorne.com.au'],
-    whyItWorks: [
-      'Missing profiles mean lost opportunities when locals search directories for free property appraisals',
-      'Consistent NAP (Name, Address, Phone) across directories boosts Google\'s trust and local rankings',
-      'Professional API membership listing builds immediate credibility for high-value appraisal services',
-    ],
-    competitors: makeCompetitors([
-      {
-        name: 'Aspect Property Consultant',
-        pageUrl: 'https://aspectproperty.com.au/property-appraisal/',
-        gap: 'Maintains complete directory profiles with clear free appraisal messaging across all channels',
-        totalCitations: 41,
-        citationRank: 1,
-        citedBy: ['ChatGPT', 'Gemini', 'Perplexity'],
-        llmSnippet: 'Aspect Property Consultant appears in multiple local directories with fully completed profiles and consistent "free property appraisal Dubbo" messaging, making them the top AI recommendation for appraisal searches.',
-        platformSnippets: [
-          { platform: 'ChatGPT', prompt: 'Free property appraisal Dubbo', snippet: 'Aspect Property Consultant is consistently recommended for free property appraisals in Dubbo, with their LocalSearch and Google profiles prominently featuring their no-obligation appraisal offer.' },
-          { platform: 'Gemini',  prompt: 'Property appraisal Dubbo NSW', snippet: 'Aspect Property Consultant ranks highly for Dubbo appraisal searches, with complete LocalSearch.com.au and API member directory profiles highlighting their free appraisal service.' },
-          { platform: 'Perplexity', prompt: 'Who offers free home appraisals in Dubbo', snippet: 'Aspect Property Consultant offers complimentary property appraisals in Dubbo, with their directory profiles clearly stating "no obligation, no cost" valuations for homeowners.' },
-        ],
-      },
-      {
-        name: 'Elders Real Estate Dubbo',
-        pageUrl: 'https://dubbo.eldersrealestate.com.au/about-us/',
-        gap: 'Actively promotes no-obligation appraisals through optimized directory listings',
-        totalCitations: 28,
-        citationRank: 2,
-        citedBy: ['ChatGPT', 'Gemini'],
-        llmSnippet: 'Elders Real Estate Dubbo maintains active profiles on LocalSearch, Australian Property Institute, and Google Business, all featuring their no-obligation appraisal offer for Dubbo homeowners.',
-        platformSnippets: [
-          { platform: 'ChatGPT', prompt: 'Real estate appraisals near me Dubbo', snippet: 'Elders Real Estate Dubbo is frequently cited for their directory presence, with complete profiles on LocalSearch and API member directory highlighting free appraisals in the Dubbo area.' },
-          { platform: 'Gemini',  prompt: 'Dubbo real estate agents offering free valuations', snippet: 'Elders Real Estate Dubbo maintains comprehensive local directory listings and offers free property valuations, making them visible across multiple Dubbo appraisal searches.' },
-        ],
-      },
-      {
-        name: 'Ray White Dubbo',
-        gap: 'Consistent brand presence across national and local directories drives appraisal enquiries',
-        totalCitations: 16,
-        citationRank: 3,
-        citedBy: ['Perplexity'],
-        llmSnippet: 'Ray White Dubbo\'s national brand profile and consistent local directory presence means they appear in AI answers for property appraisal queries even without an optimized local page.',
-        platformSnippets: [
-          { platform: 'Perplexity', prompt: 'Top real estate agencies Dubbo', snippet: 'Ray White Dubbo benefits from their strong national brand presence and consistent directory profiles, appearing in Perplexity results for appraisal-related searches in the Dubbo area.' },
-        ],
-      },
-    ]),
-    sources: makeSources(
-      [
-        {
-          title: 'LocalSearch business directory',
-          source: 'localsearch.com.au',
-          snippet: 'Local directory where complete profiles can highlight services like free appraisals.',
-        },
-        {
-          title: 'Australian Property Institute member directory',
-          source: 'api.org.au',
-          snippet: 'Professional directory; complete profiles build credibility for property appraisal services.',
-        },
-      ],
-      'https://raineandhorne.com.au',
-    ),
-    contentGaps: [],
-    promptsTriggeringThis: [],
-    llmCoverageGap: {
-      platforms: [],
-      summary:
-        'People search for free property appraisals and home value in Dubbo. Your site lacks consistent, matching listings that highlight "Obligation-free property appraisal" for Dubbo.',
-    },
-    generatedAsset: null,
-    checklist: makeChecklist('69de01cb9c10756b6b6132a9', [
-      {
-        label: 'Claim your profiles on these two directories',
-        description: 'Both LocalSearch and the API member directory are trusted sources that Google uses to verify your business. Competitors already have profiles here — claiming yours takes about 10 minutes each.',
-        stepType: 'link',
-        links: [
-          { label: 'LocalSearch.com.au — claim your free listing', url: 'https://www.localsearch.com.au/claim-listing' },
-          { label: 'API.org.au — member directory listing', url: 'https://www.api.org.au/find-a-member' },
-        ],
-      },
-      {
-        label: 'Use this exact business info on both profiles',
-        description: 'Small inconsistencies — like "Rd" vs "Road" or a different phone number — confuse Google and reduce how much it trusts your location data. Copy these details exactly as shown.',
-        stepType: 'nap',
-        napData: {
-          name: 'Raine & Horne Dubbo',
-          address: '63 Macquarie Street, Dubbo NSW 2830',
-          phone: '(02) 6882 6999',
-        },
-      },
-      {
-        label: 'Add these search phrases to your profile',
-        description: 'Paste these into the Services or Description field on each profile. These are the exact words Dubbo property owners type when looking for an appraisal — being in the profile text helps you show up.',
-        stepType: 'keyword',
-        keywords: [
-          'Free property appraisal Dubbo',
-          'Rental appraisal Dubbo NSW',
-          'Obligation-free property appraisal',
-          'Home valuation Dubbo',
-        ],
-      },
-      {
-        label: 'Upload a few photos',
-        description: 'Profiles with photos get significantly more clicks than those without. Use 3–5 real images — your office exterior, your team, or a recent property you\'ve listed. Phone photos are fine.',
-        stepType: 'task',
-      },
-      {
-        label: 'Write a short business description',
-        description: 'In 2–3 sentences, mention that you offer free appraisals, how quickly you respond, and that you\'ve been in Dubbo for 40+ years. Keep the tone conversational — write it like you\'d explain it to a neighbour.',
-        stepType: 'task',
-      },
-    ]),
-  },
-
   // 5 — 69de01cb9c10756b6b6132aa
   {
     id: '69de01cb9c10756b6b6132aa',
@@ -1072,288 +922,6 @@ export const seedRecommendations: Recommendation[] = [
     ]),
   },
 
-  // 9 — 69de02549c10756b6b6132b5
-  {
-    id: '69de02549c10756b6b6132b5',
-    title: 'Set Clear PM Response Standards to Convert More Leads',
-    description:
-      'Property management inquiries often stall when landlords can\'t find clear communication standards and response times. By publishing explicit service commitments, you\'ll reduce friction in the decision process and showcase your professionalism—a key strength that differentiates you from competitors who leave prospects guessing.',
-    category: 'Conversion',
-    impactLabel: 'High impact',
-    effort: 'Bigger lift',
-    themeId: 'residential-property-leasing',
-    createdAt: CREATED_AT,
-    locationNames: LOCATION_NAMES,
-    locations: 8,
-    tags: ['Conversion', 'High Impact'],
-    status: 'pending',
-    assignedTo: null,
-    assignChoice: null,
-    acceptedAt: null,
-    acceptedBy: null,
-    completedAt: null,
-    shortAction: 'Publish service standards',
-    youScore: 16.7,
-    compScore: 50,
-    expectedImpact:
-      'Publishing clear service standards will reduce objections during the inquiry process and increase conversion rates from website visitors to actual property management leads. Landlords who see defined response times and escalation procedures are more likely to trust you with their investment properties.',
-    keyInsights: [
-      'Despite a perfect 5.0 rating showing strong satisfaction, this strength isn\'t being leveraged on the website',
-      'The absence of published communication standards creates unnecessary friction for potential clients',
-      'Competitors who clearly state service commitments capture leads that might otherwise choose you',
-    ],
-    swotDrivers: [
-      'Occasional complaints about administration in property management',
-      'Changing Consumer Expectations',
-      'Professionalism and Expertise',
-    ],
-    competitorsInsight: [
-      'Competitors who publish clear service standards capture trust-sensitive landlords earlier in the decision process',
-      'The absence of visible communication commitments creates an opportunity gap competitors can exploit',
-    ],
-    targetPages: [
-      'https://raineandhorne.com.au/dubbo/property-management-support',
-      'https://raineandhorne.com.au/dubbo/communication-standards',
-    ],
-    whyItWorks: [
-      'Landlords choose property managers based on trust and clear communication expectations',
-      'Admin complaints noted in SWOT analysis indicate gaps in setting proper expectations',
-      'Changing consumer expectations demand transparency before they even inquire',
-    ],
-    competitors: makeCompetitors([
-      {
-        name: 'PPG Dubbo',
-        gap: 'Publishes explicit response time guarantees and service standards on their PM page',
-        totalCitations: 27,
-        citationRank: 1,
-        citedBy: ['ChatGPT', 'Gemini'],
-        llmSnippet: 'PPG Dubbo clearly states their property management response time commitments and service standards online, making them the default recommendation when landlords search for transparent property managers in Dubbo.',
-        platformSnippets: [
-          { platform: 'ChatGPT', prompt: 'Property manager with clear service standards Dubbo', snippet: 'PPG Dubbo is frequently recommended for their transparent property management standards, with published response times for maintenance requests and regular update schedules for landlords.' },
-          { platform: 'Gemini',  prompt: 'Dubbo property management response times', snippet: 'PPG Dubbo outlines their specific response time commitments for routine and urgent maintenance requests, making them a trusted choice for landlords who value clear communication.' },
-        ],
-      },
-      {
-        name: 'Ray White Dubbo',
-        gap: 'Dedicated PM communication page with update schedules and escalation paths builds landlord confidence',
-        totalCitations: 16,
-        citationRank: 2,
-        citedBy: ['Perplexity'],
-        llmSnippet: 'Ray White Dubbo\'s property management section includes a clear outline of landlord update frequencies, maintenance escalation procedures, and communication channels — cited by Perplexity for PM transparency queries.',
-        platformSnippets: [
-          { platform: 'Perplexity', prompt: 'Transparent property management Dubbo', snippet: 'Ray White Dubbo provides landlords with clear expectations around communication frequency, update schedules, and how maintenance issues are escalated and resolved.' },
-        ],
-      },
-    ]),
-    sources: makeSources(
-      [
-        {
-          title: 'SWOT Analysis - Administrative Weaknesses',
-          source: 'SWOT',
-          snippet: 'Occasional complaints about administration in property management',
-        },
-        {
-          title: 'Market Threat Assessment',
-          source: 'SWOT',
-          snippet: 'Changing Consumer Expectations',
-        },
-        {
-          title: 'Customer Satisfaction Data',
-          source: 'gemini',
-          snippet: 'Perfect 5.0 rating indicating strong satisfaction',
-        },
-      ],
-      'https://raineandhorne.com.au/dubbo/property-management-support',
-    ),
-    contentGaps: [],
-    promptsTriggeringThis: [],
-    llmCoverageGap: {
-      platforms: [],
-      summary:
-        'Before landlords enquire, they want simple, clear communication standards they can trust. The site lacks a page with response times, update frequency, and escalation steps.',
-    },
-    generatedAsset: null,
-    checklist: makeChecklist('69de02549c10756b6b6132b5', [
-      {
-        label: 'Document your actual response times',
-        description: 'Write down what you genuinely commit to: urgent issues (4 hours), routine enquiries (24 hours), maintenance requests (48 hours). If the standard isn\'t set internally first, publishing it externally won\'t stick.',
-        stepType: 'task',
-      },
-      {
-        label: 'Create a simple service standards page',
-        description: 'One page that lists your communication commitments, how often landlords get updates, and what happens when something needs escalating. Plain language, no jargon — think of it as your promise in writing.',
-        stepType: 'task',
-        targetPage: 'https://raineandhorne.com.au/dubbo/property-management-support',
-      },
-      {
-        label: 'Add direct contact info for different request types',
-        description: 'Make it clear who to call for urgent repairs vs routine enquiries vs after-hours emergencies. A simple table or three labelled contact options removes the friction of "I don\'t know who to call."',
-        stepType: 'task',
-      },
-      {
-        label: 'Add a FAQ for common admin concerns',
-        description: 'Answer the questions that precede hesitation: "What happens if I can\'t reach you?", "How quickly will a repair be handled?", "When do I get my monthly statement?" — these are the objections that stop landlords from signing up.',
-        stepType: 'task',
-      },
-      {
-        label: 'Put an enquiry form on every PM page',
-        description: 'Once a landlord has read your standards and feels confident, the form should be right there — no hunting for a contact page. Add a phone number too, prominently displayed.',
-        stepType: 'task',
-      },
-    ]),
-  },
-
-  // 10 — 69de03209c10756b6b6132bd
-  {
-    id: '69de03209c10756b6b6132bd',
-    title: 'Complete Domain, Realestate and Farmbuy Rural Profiles',
-    description:
-      'Major property portals like Domain, Realestate.com.au, and Farmbuy dominate rural property searches in Dubbo, appearing frequently in search results and citation sources. Completing and optimizing your profiles on these platforms will significantly increase your visibility to rural buyers and sellers who start their property journey on these trusted portals.',
-    category: 'Local SEO',
-    impactLabel: 'High impact',
-    effort: 'Quick win',
-    themeId: 'rural-property-sales',
-    createdAt: CREATED_AT,
-    locationNames: LOCATION_NAMES,
-    locations: 5,
-    tags: ['Local SEO', 'Quick Win'],
-    status: 'pending',
-    assignedTo: null,
-    assignChoice: null,
-    acceptedAt: null,
-    acceptedBy: null,
-    completedAt: null,
-    shortAction: 'Complete key portal profiles',
-    youScore: 0,
-    compScore: 66.7,
-    expectedImpact:
-      'By establishing a strong presence on these dominant property portals, you\'ll capture more leads from rural property seekers who rely on these platforms. This increased visibility will drive more direct inquiries, phone calls, and website traffic while simultaneously strengthening your local SEO through improved citation consistency.',
-    keyInsights: [
-      'Property portals serve as both lead generation platforms and critical citation sources for local SEO',
-      'Rural property searches have unique characteristics that require specialized portal optimization',
-    ],
-    swotDrivers: [
-      'Opportunity to leverage established portal traffic for rural property searches',
-      'Threat from competitors who maintain active, optimized portal profiles',
-    ],
-    competitorsInsight: [
-      'Major property portals rank prominently for rural property searches, making profile optimization essential',
-      'Competitors with complete, active portal profiles capture leads before prospects reach agency websites',
-    ],
-    targetPages: ['https://raineandhorne.com.au'],
-    whyItWorks: [
-      'These portals appear prominently in your citation sources, indicating Google uses them to verify business information',
-      'Rural buyers and sellers typically start their property search on these major portals before contacting agents',
-      'Consistent business details across portals strengthen Google\'s trust signals and improve local search rankings',
-    ],
-    competitors: makeCompetitors([
-      {
-        name: 'Dubbo Real Estate Agency',
-        pageUrl: 'https://dubborealestateagency.com.au',
-        gap: 'Competitors likely have established portal presence capturing rural property searches',
-        totalCitations: 33,
-        citationRank: 1,
-        citedBy: ['ChatGPT', 'Gemini', 'Perplexity'],
-        llmSnippet: 'Dubbo Real Estate Agency maintains fully optimised profiles on Domain, Realestate.com.au, and Farmbuy — consistently surfaced by AI tools for rural property searches in the Dubbo region.',
-        platformSnippets: [
-          { platform: 'ChatGPT', prompt: 'Rural property agents Dubbo', snippet: 'Dubbo Real Estate Agency is prominently featured across major property portals including Domain and Realestate.com.au, making them the top recommendation for rural property searches in Dubbo.' },
-          { platform: 'Gemini',  prompt: 'Farms for sale Dubbo NSW', snippet: 'Dubbo Real Estate Agency has complete portal profiles on Domain and Farmbuy with rural-specific service descriptions and active listings, ranking highly for rural Dubbo property searches.' },
-          { platform: 'Perplexity', prompt: 'Real estate agency rural properties Dubbo', snippet: 'Dubbo Real Estate Agency appears consistently across major property portals with complete business profiles and rural-focused content, making them easy to find for buyers and sellers.' },
-        ],
-      },
-      {
-        name: 'Elders Real Estate Dubbo',
-        pageUrl: 'https://eldersrealestate.com.au',
-        gap: 'Active portal profiles provide competitive advantage in rural market visibility',
-        totalCitations: 22,
-        citationRank: 2,
-        citedBy: ['ChatGPT', 'Perplexity'],
-        llmSnippet: 'Elders Real Estate Dubbo maintains active profiles on Domain and Realestate.com.au with rural property listings and service descriptions — regularly cited by AI tools as a strong local option for Dubbo rural searches.',
-        platformSnippets: [
-          { platform: 'ChatGPT', prompt: 'Farm sales agents near Dubbo', snippet: 'Elders Real Estate Dubbo is active on major property portals with rural listings and complete agency profiles, frequently appearing in results for farm and rural property searches near Dubbo.' },
-          { platform: 'Perplexity', prompt: 'Rural lifestyle properties Dubbo agent', snippet: 'Elders Real Estate Dubbo maintains a strong presence on Realestate.com.au and Domain with lifestyle and rural property specialisation, making them visible for rural search queries.' },
-        ],
-      },
-      {
-        name: 'Matt Hansen Real Estate',
-        pageUrl: 'https://matthansenrealestate.com.au',
-        gap: 'Major franchise benefits from strong portal relationships and visibility',
-        totalCitations: 18,
-        citationRank: 3,
-        citedBy: ['Gemini'],
-        llmSnippet: 'Matt Hansen Real Estate\'s national franchise relationship ensures a high-quality presence across Domain and Realestate.com.au, giving them consistent visibility for rural property queries in the Dubbo area.',
-        platformSnippets: [
-          { platform: 'Gemini', prompt: 'Real estate portals Dubbo rural listings', snippet: 'Matt Hansen Real Estate benefits from their national franchise\'s established portal relationships, with well-maintained profiles on Domain and Realestate.com.au covering both residential and rural properties.' },
-        ],
-      },
-    ]),
-    sources: makeSources(
-      [
-        {
-          title: 'Domain Australia',
-          source: 'domain.com.au',
-          snippet: 'Major Australian property portal used by buyers and sellers.',
-        },
-        {
-          title: 'realestate.com.au',
-          source: 'realestate.com.au',
-          snippet: 'Leading property portal where agencies list and promote properties.',
-        },
-        {
-          title: 'Farmbuy',
-          source: 'farmbuy.com',
-          snippet: 'Specialist portal for farms and rural properties in Australia.',
-        },
-      ],
-      'https://raineandhorne.com.au',
-    ),
-    contentGaps: [],
-    promptsTriggeringThis: [],
-    llmCoverageGap: {
-      platforms: [],
-      summary:
-        'People searching on Google for rural property sales in Dubbo often start on big property portals. Your site likely lacks fully completed, rural-focused profiles on these portals.',
-    },
-    generatedAsset: null,
-    checklist: makeChecklist('69de03209c10756b6b6132bd', [
-      {
-        label: 'Claim or verify your agency profiles on all three portals',
-        description: 'Domain, Realestate.com.au, and Farmbuy are the portals rural buyers and sellers use most. Claiming takes 10–15 minutes each — log in or create an agency account and verify your details.',
-        stepType: 'link',
-        links: [
-          { label: 'Domain.com.au — claim your agency profile', url: 'https://www.domain.com.au/agent-admin' },
-          { label: 'Realestate.com.au — agency portal login', url: 'https://www.realestate.com.au/agent-admin' },
-          { label: 'Farmbuy.com — list your agency', url: 'https://www.farmbuy.com' },
-        ],
-      },
-      {
-        label: 'Use consistent business details across all three',
-        description: 'Your business name, address, and phone number must be identical on every platform — exactly as they appear on your website. Even small differences (like "St" vs "Street") reduce Google\'s trust in your location data.',
-        stepType: 'nap',
-        napData: {
-          name: 'Raine & Horne Dubbo',
-          address: '63 Macquarie Street, Dubbo NSW 2830',
-          phone: '(02) 6882 6999',
-        },
-      },
-      {
-        label: 'Write a rural-focused service description',
-        description: 'Add a bio that specifically mentions farms, lifestyle blocks, and acreage — not just residential sales. Buyers of rural properties filter for agents who understand their market. Generic descriptions lose them to Elders and Matt Hansen.',
-        stepType: 'task',
-      },
-      {
-        label: 'Upload team photos and link to your website',
-        description: 'Profiles with photos and a website link get significantly more clicks. Use real photos — not stock. Even a smartphone photo of your team outside the office is better than nothing.',
-        stepType: 'task',
-      },
-      {
-        label: 'Add current rural listings and note recent sales',
-        description: 'An empty profile signals inactivity. Populate with any current rural or lifestyle listings you have. If you have recent rural sales, add them with keyword-rich descriptions mentioning property type, acreage, and location.',
-        stepType: 'task',
-      },
-    ]),
-  },
-
   // 8 — 69de02549c10756b6b6132b4
   {
     id: '69de02549c10756b6b6132b4',
@@ -1503,6 +1071,475 @@ export const seedRecommendations: Recommendation[] = [
         stepType: 'task',
       },
     ]),
+  },
+
+
+  // FAQ-A — 69fa2100bc9c10756b6bdf01
+  {
+    id: '69fa2100bc9c10756b6bdf01',
+    title: 'Add Rental FAQ Section to Raine & Horne Dubbo Property Management Page',
+    description:
+      'Landlords and tenants searching for property management in Dubbo ask questions like "what are your management fees," "how quickly can you find tenants," and "what maintenance services are included." Your property management page currently lacks a dedicated FAQ section, meaning visitors leave to find answers elsewhere. Adding 10–15 plain-language FAQs directly on your PM page keeps prospects engaged and gives AI tools concise, citable answers to surface your page more often.',
+    category: 'FAQ',
+    impactLabel: 'High impact',
+    effort: 'Quick win',
+    themeId: 'residential-property-leasing',
+    createdAt: '2026-05-05T15:54:53.367Z',
+    locations: 8,
+    locationNames: ['NSW', 'Dubbo'],
+    tags: ['FAQ', 'Property Management', 'Leasing'],
+    status: 'pending',
+    assignedTo: null,
+    assignChoice: null,
+    acceptedAt: null,
+    acceptedBy: null,
+    completedAt: null,
+    shortAction: 'Add PM FAQ section',
+    youScore: 3.2,
+    compScore: 58.0,
+    expectedImpact:
+      'Adding an FAQ section gives AI tools direct Q&A content to cite, improving your visibility for question-based landlord searches in Dubbo.',
+    keyInsights: [
+      'Landlords search "property management fees Dubbo" with no clear answers on your site',
+      'Competitors like Ray White Dubbo include FAQ sections on their PM pages',
+      'Plain-language answers increase time-on-page and reduce call-before-you-know friction',
+    ],
+    swotDrivers: [
+      'Strength: 40+ years local Dubbo expertise — use this in FAQ answers',
+      'Weakness: No FAQ section on current PM page — easy quick win',
+      'Opportunity: Long-tail question searches have low competition in Dubbo',
+    ],
+    competitorsInsight: [
+      'Ray White Dubbo answers fees and timelines on their PM landing page',
+      'PRD Nationwide includes "What to expect" FAQ blocks on PM pages',
+    ],
+    targetPages: [
+      'https://raineandhorne.com.au/dubbo/property-management',
+    ],
+    whyItWorks: [
+      'Question-based searches like "what are PM fees in Dubbo" have no clear answer on your site',
+      'AI assistants cite pages with clear Q&A structure for question-based queries',
+      'A FAQ section reduces landlord hesitation and increases enquiry conversion',
+      'Ray White Dubbo already does this — FAQ answers on their PM page',
+    ],
+    competitors: [
+      {
+        id: 'comp-rw-faq-01',
+        name: 'Ray White Dubbo',
+        pageUrl: 'https://raywhite.com/dubbo',
+        llmSnippet:
+          'Ray White Dubbo offers full property management services with transparent fee structures and fast tenant placement timelines detailed on their website.',
+        citedBy: ['ChatGPT', 'Gemini'] as const,
+        totalCitations: 14,
+        citationRank: 1,
+        sourceGaps: ['Management fees FAQ', 'Tenant placement timeline'],
+        whyTheyWin:
+          'They clearly answer common landlord questions on their PM page, making it easy for AI tools to cite them.',
+      },
+    ],
+    sources: [
+      {
+        platform: 'ChatGPT',
+        competitorName: 'Ray White Dubbo',
+        url: 'https://raywhite.com/dubbo',
+        snippet:
+          'Ray White Dubbo provides comprehensive property management including maintenance coordination and regular inspections.',
+        referencedInAnswers: 8,
+      },
+    ],
+    contentGaps: [
+      {
+        phrase: 'property management fees Dubbo',
+        frequency: 6,
+        competitors: ['Ray White Dubbo', 'PRD Nationwide'],
+        recommendation: 'Add a FAQ answer covering your fee structure',
+      },
+    ],
+    promptsTriggeringThis: [
+      'best property managers in Dubbo',
+      'property management fees Dubbo',
+      'how to find tenants for rental property Dubbo',
+    ],
+    llmCoverageGap: {
+      platforms: ['ChatGPT', 'Gemini', 'Perplexity'] as const,
+      summary:
+        'Your PM page is not cited in AI answers for landlord questions because it lacks structured Q&A content.',
+    },
+    generatedAsset: null,
+    checklist: [
+      {
+        id: 'faq-a-step-1',
+        label: 'List 10–15 common landlord and tenant questions',
+        description:
+          'Cover fees, tenant placement timeline, maintenance, inspections, lease renewals, and what to do if a tenant stops paying.',
+        completed: false,
+        autoCompleted: false,
+        ctaLabel: 'Mark done',
+        ctaAction: 'mark_done' as const,
+        stepType: 'task' as const,
+      },
+      {
+        id: 'faq-a-step-2',
+        label: 'Write plain-language 2–4 sentence answers',
+        description:
+          'Use everyday language. Avoid jargon. Include specific Dubbo market context where possible.',
+        completed: false,
+        autoCompleted: false,
+        ctaLabel: 'Mark done',
+        ctaAction: 'mark_done' as const,
+        stepType: 'task' as const,
+      },
+      {
+        id: 'faq-a-step-3',
+        label: 'Add FAQ section to your property management landing page',
+        description:
+          'Place it below the service description. Use accordion or stacked Q&A layout for readability.',
+        completed: false,
+        autoCompleted: false,
+        ctaLabel: 'Mark done',
+        ctaAction: 'mark_done' as const,
+        stepType: 'task' as const,
+      },
+      {
+        id: 'faq-a-step-4',
+        label: 'Link to enquiry form from relevant FAQ answers',
+        description:
+          'At the end of fee and timeline answers, add a "Get a free management quote" button linking to your contact form.',
+        completed: false,
+        autoCompleted: false,
+        ctaLabel: 'Mark done',
+        ctaAction: 'mark_done' as const,
+        stepType: 'task' as const,
+      },
+  ],
+  },
+
+  // FAQ-B — 69fa2100bc9c10756b6bdf02
+  {
+    id: '69fa2100bc9c10756b6bdf02',
+    title: 'Publish a Dubbo Property Appraisal FAQ Blog to Capture High-Intent Searches',
+    description:
+      'Homeowners searching for "how does a property appraisal work in Dubbo" or "what to expect from a free property valuation" have no authoritative guide on your site. Competitors like Aspect Property Consultants publish appraisal guides that consistently appear in AI-generated answers. A blog post combining a plain-language appraisal walkthrough with 8–10 embedded FAQs will position Raine & Horne Dubbo as the go-to local source and drive qualified appraisal leads directly to your booking form.',
+    category: 'FAQ',
+    impactLabel: 'High impact',
+    effort: 'Medium',
+    themeId: 'property-appraisals',
+    createdAt: '2026-05-05T15:54:53.367Z',
+    locations: 12,
+    locationNames: ['NSW', 'Dubbo', 'Regional NSW'],
+    tags: ['FAQ', 'Blog', 'Appraisals', 'Content'],
+    status: 'pending',
+    assignedTo: null,
+    assignChoice: null,
+    acceptedAt: null,
+    acceptedBy: null,
+    completedAt: null,
+    shortAction: 'Publish appraisal FAQ blog',
+    youScore: 2.4,
+    compScore: 67.0,
+    expectedImpact:
+      'A blog with embedded FAQs becomes a citable resource for AI tools responding to appraisal questions, increasing qualified traffic from homeowners ready to list.',
+    keyInsights: [
+      'Searches like "free property appraisal Dubbo" and "how much is my home worth Dubbo" generate regular traffic with no content to capture it on your site',
+      'Aspect Property Consultants is cited by AI tools for appraisal queries in the Dubbo region',
+      'Blog posts with FAQ schema markup get featured in AI Overviews more frequently than plain service pages',
+    ],
+    swotDrivers: [
+      'Strength: 40+ years Dubbo market knowledge gives credible, local-specific answers',
+      'Weakness: No blog or educational content on appraisals currently',
+      'Opportunity: Competitors\' appraisal guides are generic — local specificity wins',
+    ],
+    competitorsInsight: [
+      'Aspect Property Consultants publishes appraisal guides cited in ChatGPT and Gemini answers',
+      'Ray White Dubbo has an appraisal landing page but no FAQ blog content',
+    ],
+    targetPages: [
+      'https://raineandhorne.com.au/dubbo/blog/dubbo-property-appraisal-guide',
+      'https://raineandhorne.com.au/dubbo/appraisals',
+    ],
+    whyItWorks: [
+      'AI tools cite educational blog content more than service pages for how-to and FAQ queries',
+      'Aspect Property Consultants already wins on this topic — a richer local guide can displace them',
+      'Homeowners reading an appraisal guide are high-intent leads, one click from booking',
+      'Aspect Property Consultants is the top cited competitor for Property Appraisals',
+    ],
+    competitors: [
+      {
+        id: 'comp-aspect-faq-01',
+        name: 'Aspect Property Consultants',
+        pageUrl: 'https://aspectproperty.com.au',
+        llmSnippet:
+          'Aspect Property Consultants provides free property appraisals in Dubbo with detailed market analysis and clear next steps for sellers.',
+        citedBy: ['ChatGPT', 'Gemini', 'Perplexity'] as const,
+        totalCitations: 19,
+        citationRank: 1,
+        sourceGaps: ['Local Dubbo market data', 'Step-by-step appraisal FAQ'],
+        whyTheyWin:
+          'Their appraisal guide answers specific homeowner questions that AI tools surface for valuation queries.',
+      },
+    ],
+    sources: [
+      {
+        platform: 'ChatGPT',
+        competitorName: 'Aspect Property Consultants',
+        url: 'https://aspectproperty.com.au/appraisals',
+        snippet:
+          'Aspect provides free market appraisals for Dubbo homeowners, typically completed within 48 hours of enquiry.',
+        referencedInAnswers: 11,
+      },
+    ],
+    contentGaps: [
+      {
+        phrase: 'how does property appraisal work Dubbo',
+        frequency: 7,
+        competitors: ['Aspect Property Consultants'],
+        recommendation: 'Publish a step-by-step appraisal guide blog with FAQ section',
+      },
+    ],
+    promptsTriggeringThis: [
+      'how to get a free property appraisal in Dubbo',
+      'what is included in a property valuation NSW',
+      'property appraisal process Dubbo real estate',
+    ],
+    llmCoverageGap: {
+      platforms: ['ChatGPT', 'Gemini', 'Perplexity'] as const,
+      summary:
+        'Your site is not cited for any appraisal FAQ queries because no educational blog content exists. Competitors fill this gap.',
+    },
+    generatedAsset: null,
+    checklist: [
+      {
+        id: 'faq-b-step-1',
+        label: 'Outline blog structure: intro + 5-step appraisal process + 8–10 FAQs + CTA',
+        description:
+          'Cover: what an appraisal is, what happens during the visit, how values are determined, how long it takes, and what to do next.',
+        completed: false,
+        autoCompleted: false,
+        ctaLabel: 'Mark done',
+        ctaAction: 'mark_done' as const,
+        stepType: 'task' as const,
+      },
+      {
+        id: 'faq-b-step-2',
+        label: 'Write FAQs covering cost, timeline, accuracy, and next steps',
+        description:
+          'Example: "Is a free appraisal really free?", "How long does an appraisal take?", "How accurate is an online estimate vs a professional appraisal?"',
+        completed: false,
+        autoCompleted: false,
+        ctaLabel: 'Mark done',
+        ctaAction: 'mark_done' as const,
+        stepType: 'task' as const,
+      },
+      {
+        id: 'faq-b-step-3',
+        label: 'Include local Dubbo market data and recent sale examples',
+        description:
+          'Reference suburb-level trends (median prices, days on market) to give the blog local authority that generic competitors cannot match.',
+        completed: false,
+        autoCompleted: false,
+        ctaLabel: 'Mark done',
+        ctaAction: 'mark_done' as const,
+        stepType: 'task' as const,
+      },
+      {
+        id: 'faq-b-step-4',
+        label: 'Publish and link from existing appraisal service page',
+        description:
+          'Add a prominent "Read our appraisal guide" link from the main appraisals page and include a "Book a free appraisal" CTA at the end.',
+        completed: false,
+        autoCompleted: false,
+        ctaLabel: 'Mark done',
+        ctaAction: 'mark_done' as const,
+        stepType: 'task' as const,
+      },
+  ],
+  },
+
+  // FAQ-C — 69fa2100bc9c10756b6bdf03
+  {
+    id: '69fa2100bc9c10756b6bdf03',
+    title: 'Create a Dedicated Dubbo Property FAQ Hub for Buyers and Sellers',
+    description:
+      'Your site lacks a central FAQ resource covering common buyer and seller questions about the Dubbo property market. Competitors who publish comprehensive FAQ hubs appear more frequently in AI-generated answers for question-based searches like "how does the home buying process work in NSW" or "what costs are involved in selling a property in Dubbo." Building a structured FAQ hub with 20–30 questions across buying, selling, and market insights will capture long-tail search traffic and establish Raine & Horne Dubbo as the authoritative local property resource.',
+    category: 'FAQ',
+    impactLabel: 'High impact',
+    effort: 'Medium',
+    themeId: 'residential-property-sales',
+    createdAt: '2026-05-05T15:54:53.367Z',
+    locations: 15,
+    locationNames: ['NSW', 'Dubbo', 'Regional NSW'],
+    tags: ['FAQ', 'Hub Page', 'Buyers', 'Sellers'],
+    status: 'pending',
+    assignedTo: null,
+    assignChoice: null,
+    acceptedAt: null,
+    acceptedBy: null,
+    completedAt: null,
+    shortAction: 'Build FAQ hub page',
+    youScore: 5.6,
+    compScore: 71.0,
+    expectedImpact:
+      'A dedicated FAQ hub gives AI tools a rich, structured source to cite for buyer and seller queries, improving citation share for residential sales searches.',
+    keyInsights: [
+      'Question-based searches like "what are buying costs in NSW" and "how to sell a house in Dubbo" have no FAQ answers on your site',
+      'Sites with dedicated FAQ pages see higher citation rates in AI-generated answers for question-driven queries',
+      'No local Dubbo competitor has a comprehensive FAQ hub — first mover advantage available',
+    ],
+    swotDrivers: [
+      'Strength: Deep Dubbo market knowledge and decades of transaction data to draw on',
+      'Weakness: No FAQ or resource hub exists on the current site',
+      'Opportunity: No local Dubbo competitor has a comprehensive FAQ hub',
+    ],
+    competitorsInsight: [
+      'Ray White national site has a buyer/seller FAQ section cited frequently in AI answers',
+      'Domain.com.au FAQ pages outrank local agents for buyer question searches',
+      'Building a local Dubbo FAQ hub can outperform generic national sites on location-specific queries',
+    ],
+    targetPages: [
+      'https://raineandhorne.com.au/dubbo/faq',
+      'https://raineandhorne.com.au/dubbo/buy',
+      'https://raineandhorne.com.au/dubbo/sell',
+    ],
+    whyItWorks: [
+      'AI tools prefer pages with clearly structured Q&A content for question-based queries',
+      'A local FAQ hub with Dubbo-specific answers outperforms generic national FAQ pages for location queries',
+      'Buyers and sellers who find their questions answered are more likely to enquire directly',
+      'Ray White Dubbo is the top cited competitor for Residential Property Sales',
+    ],
+    competitors: [
+      {
+        id: 'comp-rw-faq-02',
+        name: 'Ray White Dubbo',
+        pageUrl: 'https://raywhite.com/dubbo',
+        llmSnippet:
+          'Ray White provides comprehensive buyer and seller guides with FAQ sections addressing costs, timelines, and process steps for Dubbo property transactions.',
+        citedBy: ['ChatGPT', 'Gemini'] as const,
+        totalCitations: 16,
+        citationRank: 1,
+        sourceGaps: ['Dubbo-specific buying costs', 'Local seller FAQ', 'Market FAQ hub'],
+        whyTheyWin:
+          'Their national site has FAQ content that AI tools cite; a local Dubbo hub would be more relevant.',
+      },
+      {
+        id: 'comp-lj-faq-02',
+        name: 'LJ Hooker Dubbo',
+        pageUrl: 'https://ljhooker.com.au/dubbo/buyers-guide',
+        llmSnippet:
+          'LJ Hooker Dubbo publishes a structured buyers and sellers FAQ page covering stamp duty, conveyancing costs, and settlement timelines that Gemini frequently cites for NSW property process queries.',
+        citedBy: ['Gemini', 'Perplexity'] as const,
+        totalCitations: 11,
+        citationRank: 2,
+        sourceGaps: ['First home buyer FAQ', 'Seller cost breakdown', 'Dubbo settlement process'],
+        whyTheyWin:
+          'Their FAQ page is indexed by Gemini for common buyer and seller question searches in the Dubbo region.',
+      },
+      {
+        id: 'comp-domain-faq-02',
+        name: 'Domain.com.au',
+        pageUrl: 'https://domain.com.au/advice/buying',
+        llmSnippet:
+          'Domain\'s advice hub includes extensive FAQ content on buying and selling property in NSW, making it the most-cited resource by ChatGPT and Perplexity for question-based real estate searches.',
+        citedBy: ['ChatGPT', 'Perplexity'] as const,
+        totalCitations: 28,
+        citationRank: 3,
+        sourceGaps: ['Local Dubbo market FAQ', 'Regional NSW buying costs', 'Dubbo-specific seller guide'],
+        whyTheyWin:
+          'National scale and structured FAQ content allow Domain to dominate AI citations for property process questions; a local Dubbo-specific hub can outperform them on location queries.',
+      },
+    ],
+    sources: [
+      {
+        platform: 'ChatGPT',
+        competitorName: 'Domain.com.au',
+        url: 'https://domain.com.au/advice',
+        snippet:
+          "Domain's buyer and seller advice hub is frequently cited for process and cost questions about buying and selling property in NSW.",
+        referencedInAnswers: 13,
+      },
+    ],
+    contentGaps: [
+      {
+        phrase: 'how to buy a house in Dubbo',
+        frequency: 8,
+        competitors: ['Ray White Dubbo', 'Domain.com.au'],
+        recommendation: 'Add a buying FAQ section to the hub covering process, costs, and timelines',
+      },
+      {
+        phrase: 'costs of selling property NSW',
+        frequency: 10,
+        competitors: ['Domain.com.au', 'realestate.com.au'],
+        recommendation: 'Add a selling FAQ section covering agent fees, conveyancing, and timeline',
+      },
+    ],
+    promptsTriggeringThis: [
+      'how to buy a property in Dubbo NSW',
+      'what are the costs of selling a house in Dubbo',
+      'Dubbo real estate buying process explained',
+      'first home buyer questions Dubbo',
+    ],
+    llmCoverageGap: {
+      platforms: ['ChatGPT', 'Gemini', 'Perplexity', 'Claude'] as const,
+      summary:
+        'No FAQ hub exists on your site, so AI tools cannot cite you for question-based buyer and seller queries. National portals fill this gap instead.',
+    },
+    generatedAsset: null,
+    checklist: [
+      {
+        id: 'faq-c-step-1',
+        label: 'List 20–30 questions across buying, selling, and Dubbo market topics',
+        description:
+          'Group into sections: Buying (process, costs, finance), Selling (fees, timeline, presentation), Market (Dubbo suburbs, pricing trends, rental yields).',
+        completed: false,
+        autoCompleted: false,
+        ctaLabel: 'Mark done',
+        ctaAction: 'mark_done' as const,
+        stepType: 'task' as const,
+      },
+      {
+        id: 'faq-c-step-2',
+        label: 'Write SEO-friendly answers with local Dubbo references',
+        description:
+          'Include suburb names, typical price ranges, and local regulations where relevant. Each answer should be 3–5 sentences.',
+        completed: false,
+        autoCompleted: false,
+        ctaLabel: 'Mark done',
+        ctaAction: 'mark_done' as const,
+        stepType: 'task' as const,
+      },
+      {
+        id: 'faq-c-step-3',
+        label: 'Create /faq page with anchor navigation between topic sections',
+        description:
+          'Use a sticky sidebar or jump-links at the top so users can navigate directly to Buying, Selling, or Market sections.',
+        completed: false,
+        autoCompleted: false,
+        ctaLabel: 'Mark done',
+        ctaAction: 'mark_done' as const,
+        stepType: 'task' as const,
+      },
+      {
+        id: 'faq-c-step-4',
+        label: 'Link to /faq from buy, sell, and appraisal service pages',
+        description:
+          'Add "Have questions? Visit our FAQ hub" links on each relevant service page to drive internal traffic to the hub.',
+        completed: false,
+        autoCompleted: false,
+        ctaLabel: 'Mark done',
+        ctaAction: 'mark_done' as const,
+        stepType: 'task' as const,
+      },
+      {
+        id: 'faq-c-step-5',
+        label: 'Review and update quarterly with new market questions',
+        description:
+          'Check Google Search Console for new question-based queries landing on your site and add FAQ answers for the top ones each quarter.',
+        completed: false,
+        autoCompleted: false,
+        ctaLabel: 'Mark done',
+        ctaAction: 'mark_done' as const,
+        stepType: 'task' as const,
+      },
+  ],
   },
 
 ]
