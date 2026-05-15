@@ -455,14 +455,15 @@ function FAQPreviewBox({
 export default function ContentDetailPageV2() {
   const { recommendations, metrics, acceptRec } = useAppStore()
   const id = window.location.pathname.split('/').pop()
-  const rec = recommendations.find(r => r.id === id)
+  const _recMaybe = recommendations.find(r => r.id === id)
 
   const [aeoTableOpen, setAeoTableOpen] = useState(false)
   const [showLocHover, setShowLocHover] = useState(false)
   const [locPopoverPos, setLocPopoverPos] = useState({ top: 0, right: 0 })
   const [showBlogModal, setShowBlogModal] = useState(false)
 
-  if (!rec) return null
+  if (!_recMaybe) return null
+  const rec = _recMaybe
 
   const themeConfig    = nsaThemesConfig[rec.themeId]
   const locationCount  = rec.locations ?? 1

@@ -102,12 +102,13 @@ function ScoreCard({ rec, metrics }: { rec: Recommendation; metrics: BusinessMet
 export default function GenericDetailPageV2() {
   const { recommendations, metrics } = useAppStore()
   const id  = window.location.pathname.split('/').pop()
-  const rec = recommendations.find(r => r.id === id)
+  const _recMaybe = recommendations.find(r => r.id === id)
 
   const [showLocHover, setShowLocHover] = useState(false)
   const [locPopoverPos, setLocPopoverPos] = useState({ top: 0, left: 0 })
 
-  if (!rec) return null
+  if (!_recMaybe) return null
+  const rec = _recMaybe
 
   const locationCount = rec.locations ?? 1
   const locations     = getLocationsForRec(rec.id, locationCount)
