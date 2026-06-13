@@ -30,7 +30,7 @@ export default function TaskDetailShellV2() {
     if (!id) return
     setShowRejectModal(false)
     rejectRec(id)
-    navigate('/recommendations-v2')
+    navigate('/recommendations')
   }
 
   const handleAccept = () => {
@@ -114,7 +114,7 @@ export default function TaskDetailShellV2() {
   return (
     <AppShell
       title={rec?.title ?? 'Recommendation details'}
-      onBack={() => navigate('/recommendations-v2')}
+      onBack={() => navigate('/recommendations')}
       headerRight={headerRight}
     >
       {isAccepting ? (

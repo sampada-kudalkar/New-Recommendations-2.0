@@ -4,7 +4,6 @@ import L1 from './components/shell/L1'
 import L2 from './components/shell/L2'
 import Header from './components/shell/Header'
 import DashboardPage from './pages/DashboardPage'
-import RecommendationsPage from './pages/RecommendationsPage'
 import RecommendationsV2Page from './pages/RecommendationsV2Page'
 import TaskDetailPage from './components/taskDetail/TaskDetailPage'
 import TaskDetailShellV2 from './components/taskDetail/TaskDetailShellV2'
@@ -269,20 +268,11 @@ export default function App() {
           path="/recommendations"
           element={
             <AppShell title="Recommendations" showInfoIcon headerRight={<RecsHeaderRight />} rightPanel={<FilterPanel />}>
-              <RecommendationsPage />
-            </AppShell>
-          }
-        />
-        <Route
-          path="/recommendations-v2"
-          element={
-            <AppShell title="Recommendations 2.0" showInfoIcon headerRight={<RecsHeaderRight />} rightPanel={<FilterPanel />}>
               <RecommendationsV2Page />
             </AppShell>
           }
         />
-        <Route path="/recommendations/:id" element={<TaskDetailShell />} />
-        <Route path="/recommendations-v2/:id" element={<TaskDetailShellV2 />} />
+        <Route path="/recommendations/:id" element={<TaskDetailShellV2 />} />
         <Route path="*" element={<Navigate to="/recommendations" replace />} />
       </Routes>
       <Toast />

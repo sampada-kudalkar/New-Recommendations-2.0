@@ -27,7 +27,6 @@ const sections = [
     defaultOpen: true,
     items: [
       { label: 'Recommendations', path: '/recommendations' },
-      { label: 'Recommendations 2.0', path: '/recommendations-v2' },
     ],
   },
   {
