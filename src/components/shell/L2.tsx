@@ -80,7 +80,7 @@ export default function L2() {
   const toggle = (id: string) => setOpenId(prev => (prev === id ? null : id))
 
   const isActive = (path: string) =>
-    path === '/' ? location.pathname === '/' : location.pathname.startsWith(path)
+    path === '/' ? location.pathname === '/' : location.pathname === path || location.pathname.startsWith(path + '/')
 
   return (
     <div
