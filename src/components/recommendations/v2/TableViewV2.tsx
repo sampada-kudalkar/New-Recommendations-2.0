@@ -271,7 +271,7 @@ export default function TableViewV2({ recommendations, metrics }: Props) {
                   <TableRow
                     key={rec.id}
                     className="relative border-b border-[#eaeaea] hover:bg-[#fafafa] cursor-pointer transition-colors align-top group h-[88px]"
-                    onClick={() => navigate(`/recommendations-v2/${rec.id}`)}
+                    onClick={() => navigate(`/recommendations/${rec.id}`)}
                     onMouseEnter={() => setHoveredRow(rec.id)}
                     onMouseLeave={() => { setHoveredRow(null); scheduleLocClose() }}
                   >
