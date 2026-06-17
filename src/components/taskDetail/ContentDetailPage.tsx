@@ -511,10 +511,12 @@ function getMetricForCategory(category: string): { label: string; key: MetricsKe
   if (['Content', 'Website content', 'FAQ', 'Social'].includes(category)) {
     return { label: 'Citation share', key: 'citationShare' }
   }
-  if (['Local SEO', 'Technical SEO', 'Website improvement', 'Conversion'].includes(category)) {
+  if (['Accuracy'].includes(category)) {
+    return { label: 'Accuracy score', key: 'visibility' }
+  }
+  if (['Technical SEO', 'Website improvement', 'Conversion'].includes(category)) {
     return { label: 'Visibility score', key: 'visibility' }
   }
-  // Trust & Reputation, Reviews — default
   return { label: 'Sentiment score', key: 'sentiment' }
 }
 

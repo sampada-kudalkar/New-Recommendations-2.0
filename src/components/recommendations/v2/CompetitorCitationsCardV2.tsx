@@ -1,188 +1,260 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import type { Recommendation } from '../../../types'
 import { nsaThemesConfig } from '../../../data/nsaThemesConfig'
+import { findResponseByPromptAndLlm, type AiResponseEntry } from '../../../data/aiResponses'
+import AiResponseModal from './AiResponseModal'
 
 const AVATAR_COLORS = ['#f59e0b', '#6b7280', '#8b5cf6', '#10b981', '#ef4444', '#3b82f6']
 
-function PieIcon({ score }: { score: number }) {
-  const r = 8
-  const circ = 2 * Math.PI * r
-  const dash = (score / 100) * circ
+const AI_PLATFORMS = ['ChatGPT', 'Gemini', 'Perplexity', 'Claude', 'Google AI mode']
+
+function SortChevron() {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" className="flex-shrink-0">
-      <circle cx="10" cy="10" r={r} fill="none" stroke="#eaeaea" strokeWidth="2.5" />
-      <circle cx="10" cy="10" r={r} fill="none" stroke="#377e2c" strokeWidth="2.5"
-        strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
-        transform="rotate(-90 10 10)" />
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+      className="inline-block ml-1 text-[#aaa] flex-shrink-0">
+      <polyline points="6 9 12 15 18 9" />
     </svg>
+  )
+}
+
+function AccordionChevron({ expanded }: { expanded: boolean }) {
+  return (
+    <svg
+      width="16" height="16" viewBox="0 0 24 24" fill="none"
+      stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+      className={`flex-shrink-0 transition-transform duration-150 ${expanded ? 'rotate-180' : ''}`}
+    >
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  )
+}
+
+// ── Mentions hover dropdown ───────────────────────────────────────────────────
+function MentionsCell({ competitors }: { competitors: string[] }) {
+  const [open, setOpen] = useState(false)
+  const [pos, setPos] = useState({ top: 0, left: 0 })
+  const ref = useRef<HTMLDivElement>(null)
+
+  const visibleComps = competitors.slice(0, 3)
+  const overflowCount = competitors.length > 3 ? competitors.length - 3 : 0
+
+  const handleMouseEnter = () => {
+    if (!ref.current || competitors.length === 0) return
+    const rect = ref.current.getBoundingClientRect()
+    setPos({ top: rect.bottom + 6, left: rect.left })
+    setOpen(true)
+  }
+
+  return (
+    <div
+      ref={ref}
+      className="flex-1 min-w-0 flex items-center gap-[4px] cursor-default"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={() => setOpen(false)}
+    >
+      {visibleComps.map((name, i) => (
+        <div
+          key={name}
+          className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] text-white font-normal flex-shrink-0"
+          style={{ background: AVATAR_COLORS[i % AVATAR_COLORS.length] }}
+        >
+          {name.charAt(0).toUpperCase()}
+        </div>
+      ))}
+      {overflowCount > 0 && (
+        <span className="text-[12px] text-[#8f8f8f] font-normal ml-1">+{overflowCount}</span>
+      )}
+      {competitors.length === 0 && (
+        <span className="text-[12px] text-[#ccc]">—</span>
+      )}
+
+      {open && competitors.length > 0 && createPortal(
+        <div
+          className="fixed z-[9999] w-[240px] bg-white rounded-[4px] shadow-[0px_4px_8px_0px_rgba(33,33,33,0.18)] py-3"
+          style={{ top: pos.top, left: pos.left }}
+          onMouseEnter={() => setOpen(true)}
+          onMouseLeave={() => setOpen(false)}
+        >
+          <div className="flex flex-col gap-1 px-4">
+            {competitors.map((name, i) => (
+              <div
+                key={name}
+                className="flex items-center gap-2 px-0 py-2"
+              >
+                <div
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-[12px] font-medium flex-shrink-0"
+                  style={{
+                    background: AVATAR_COLORS[i % AVATAR_COLORS.length],
+                    color: '#fff',
+                  }}
+                >
+                  {name.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px] font-normal">
+                  {name}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>,
+        document.body
+      )}
+    </div>
   )
 }
 
 interface Props { rec: Recommendation }
 
 export default function CompetitorCitationsCardV2({ rec }: Props) {
-  const [selectedPromptIdx, setSelectedPromptIdx] = useState(0)
-  const [showDropdown, setShowDropdown] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [expandedPrompt, setExpandedPrompt] = useState<string | null>(null)
+  const [modalEntry, setModalEntry] = useState<AiResponseEntry | null>(null)
 
-  const themeLabel = nsaThemesConfig[rec.themeId]?.label ?? rec.category
-  const prompts = nsaThemesConfig[rec.themeId]?.prompts ?? [themeLabel]
-  const hasMultiplePrompts = prompts.length > 1
-  const activePrompt = prompts[selectedPromptIdx]
-  // Rotate competitors per selected prompt for visual variation
-  const n = rec.competitors.length
-  const shiftedCompetitors = n > 0
-    ? [
-        ...rec.competitors.slice(selectedPromptIdx % n),
-        ...rec.competitors.slice(0, selectedPromptIdx % n),
-      ].slice(0, 3)
-    : []
+  const themeConfig = nsaThemesConfig[rec.themeId]
+  const themeLabel = themeConfig?.label ?? rec.category
+  const prompts = themeConfig?.prompts ?? [themeLabel]
 
-  // Close dropdown on outside click
+  // Expand first prompt by default
   useEffect(() => {
-    if (!showDropdown) return
-    const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setShowDropdown(false)
-      }
+    if (prompts.length > 0 && expandedPrompt === null) {
+      setExpandedPrompt(prompts[0])
     }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [showDropdown])
+  }, [])
 
-  if (shiftedCompetitors.length === 0) return null
+  const togglePrompt = (p: string) =>
+    setExpandedPrompt(prev => (prev === p ? '' : p))
+
+  const openModal = (entry: AiResponseEntry | undefined, platform: string, prompt: string) => {
+    if (entry) {
+      setModalEntry(entry)
+    } else {
+      setModalEntry({
+        date: 'Jan 10, 2026',
+        llm: platform,
+        location: '',
+        prompt,
+        response: `No response data is available for ${platform} on this prompt.`,
+        citations: [],
+      })
+    }
+  }
 
   return (
-    <div className="bg-white border border-[#eaeaea] rounded-[8px] overflow-visible">
+    <>
+      <div className="bg-white border border-[#eaeaea] rounded-[8px] overflow-hidden">
 
-      {/* ── Header ──────────────────────────────────────────────────── */}
-      <div className="px-5 pt-4 pb-2">
-        <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-[16px] text-[#212121] leading-[24px] tracking-[-0.32px] font-normal">
-            Which competitor pages are cited by AI for
-          </span>
-
-          {hasMultiplePrompts ? (
-            <div className="relative" ref={dropdownRef}>
-              <button
-                className="flex items-center gap-1"
-                onClick={() => setShowDropdown(v => !v)}
-              >
-                <span className="text-[16px] text-[#1976d2] leading-[24px] tracking-[-0.32px] font-normal">
-                  {activePrompt.replace(/\.$/, '')}
-                </span>
-                <svg
-                  width="16" height="16" viewBox="0 0 24 24" fill="none"
-                  stroke="#1976d2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                  className={`flex-shrink-0 transition-transform ${showDropdown ? 'rotate-180' : ''}`}
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </button>
-
-              {showDropdown && (
-                <div className="absolute top-full right-0 mt-1 z-50 bg-white border border-[#eaeaea] rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.12)] min-w-[480px] max-w-xl py-1">
-                  {prompts.map((p, i) => (
-                    <button
-                      key={i}
-                      onClick={() => { setSelectedPromptIdx(i); setShowDropdown(false) }}
-                      className={`w-full text-left px-4 py-2.5 text-[13px] leading-[20px] transition-colors hover:bg-[#f5f5f5] ${
-                        i === selectedPromptIdx
-                          ? 'text-[#1976d2] bg-[#ecf5fd]'
-                          : 'text-[#212121]'
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
+        {/* ── Card header ──────────────────────────────────────────────── */}
+        <div className="px-5 pt-4 pb-4">
+          <div className="flex items-center gap-1 flex-wrap">
             <span className="text-[16px] text-[#212121] leading-[24px] tracking-[-0.32px] font-normal">
-              '{activePrompt.replace(/\.$/, '')}'
+              How do AI platforms respond to
             </span>
-          )}
+            <span className="text-[16px] text-[#212121] leading-[24px] tracking-[-0.32px] font-normal">
+              '{themeLabel}'
+            </span>
+          </div>
+          <p className="text-[12px] text-[#555] leading-[18px] mt-[2px]">
+            Discover prompts are appearing in answers across AI platforms
+          </p>
         </div>
 
-        <p className="text-[12px] text-[#555] leading-[18px] mt-0.5">
-          Analyze competitor blogs cited in AI-generated answers for prompts you are tracking
-        </p>
-      </div>
+        {/* ── Accordion sections — each is its own card ───────────────── */}
+        <div className="px-6 pb-5 flex flex-col gap-3">
+          {prompts.map((prompt) => {
+            const isExpanded = expandedPrompt === prompt
 
-      {/* ── 3-column competitor grid ─────────────────────────────────── */}
-      <div className="grid grid-cols-3 gap-[10px] px-6 py-3 pb-5">
-        {shiftedCompetitors.map((comp, i) => {
-          const initial = comp.name.charAt(0).toUpperCase()
-          const avatarBg = AVATAR_COLORS[i % AVATAR_COLORS.length]
-          const topCitations = rec.competitors[0]?.totalCitations ?? 1
-          const score = rec.aeoScore
-            ? Math.round(
-                rec.aeoScore.competitor * (comp.totalCitations / topCitations) * 0.9 +
-                rec.aeoScore.competitor * 0.1
-              )
-            : ([81, 74, 68][i] ?? 70)
-
-          return (
-            <div
-              key={`${comp.id}-${selectedPromptIdx}-${i}`}
-              className="bg-[#fafafa] rounded-[8px] flex flex-col pt-5 pb-3 px-5 justify-between group"
-            >
-              {/* Top content: avatar + name, link, snippet */}
-              <div className="flex flex-col gap-[8px]">
-                <div className="flex items-center gap-[4px]">
-                  <div
-                    className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] text-white font-normal flex-shrink-0"
-                    style={{ background: avatarBg }}
-                  >
-                    {initial}
-                  </div>
-                  <span className="text-[12px] text-[#212121] leading-[18px] font-normal truncate">
-                    {comp.name}
-                  </span>
-                </div>
-
-                {comp.pageUrl ? (
-                  <a
-                    href={comp.pageUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[14px] text-[#212121] group-hover:text-[#1976d2] leading-[20px] tracking-[-0.28px] font-normal line-clamp-1 hover:underline transition-colors"
-                  >
-                    {comp.name} | {themeLabel}
-                  </a>
-                ) : (
-                  <p className="text-[14px] text-[#212121] group-hover:text-[#1976d2] leading-[20px] tracking-[-0.28px] font-normal line-clamp-1 transition-colors">
-                    {comp.name} | {themeLabel}
-                  </p>
-                )}
-
-                <p
-                  className="text-[14px] text-[#555] leading-[20px] tracking-[-0.28px] overflow-hidden"
-                  style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', height: 40 }}
+            return (
+              <div
+                key={prompt}
+                className="rounded-[8px] bg-white overflow-hidden"
+              >
+                {/* Accordion header row — 52px */}
+                <button
+                  className="w-full flex items-center gap-2 h-[52px] px-4 bg-[#fafafa] hover:bg-[#f0f0f0] transition-colors text-left"
+                  onClick={() => togglePrompt(prompt)}
                 >
-                  {comp.llmSnippet}
-                </p>
-              </div>
+                  <AccordionChevron expanded={isExpanded} />
+                  <span className="text-[13px] text-[#212121] leading-[20px] font-normal">
+                    {prompt}
+                  </span>
+                </button>
 
-              {/* AEO content score — bottom-aligned */}
-              <div className="flex items-end gap-[4px] mt-3">
-                <span className="text-[12px] text-[#212121] leading-none font-normal whitespace-nowrap">
-                  AEO content score
-                </span>
-                <PieIcon score={score} />
-                <span className="text-[16px] text-[#377e2c] leading-none tracking-[-0.32px] font-normal">
-                  {score > 0 ? Math.round(score) : '—'}
-                </span>
-                {score > 0 && (
-                  <span className="text-[14px] text-[#8f8f8f] leading-none font-normal">/100</span>
+                {/* Expanded table body */}
+                {isExpanded && (
+                  <div>
+                    {/* Column headers — 36px, no top divider, left-aligned with accordion text */}
+                    <div className="flex items-center h-[36px] pl-[40px] pr-4 border-b border-[#eaeaea] bg-[#fafafa]">
+                      <div className="flex-1 min-w-0 flex items-center text-[11px] text-[#555] font-normal">
+                        AI site <SortChevron />
+                      </div>
+                      <div className="flex-1 min-w-0 flex items-center text-[11px] text-[#555] font-normal">
+                        Position <SortChevron />
+                      </div>
+                      <div className="flex-1 min-w-0 text-[11px] text-[#555] font-normal">
+                        All mentions
+                      </div>
+                      <div className="flex-1 min-w-0 flex items-center text-[11px] text-[#555] font-normal">
+                        Action <SortChevron />
+                      </div>
+                    </div>
+
+                    {/* Platform rows — 54px each */}
+                    {AI_PLATFORMS.map((platform, rowIdx) => {
+                      const entry = findResponseByPromptAndLlm(prompt, platform)
+                      const position = entry?.ourPosition ?? null
+                      const competitors = entry?.mentionedCompetitors ?? []
+                      const isLast = rowIdx === AI_PLATFORMS.length - 1
+
+                      return (
+                        <div
+                          key={platform}
+                          className={`flex items-center h-[54px] pl-[40px] pr-4 border-b border-[#eaeaea] bg-[#fafafa] hover:bg-[#f0f0f0] transition-colors ${isLast ? 'border-b-0 rounded-b-[8px]' : ''}`}
+                        >
+                          {/* AI site */}
+                          <div className="flex-1 min-w-0 text-[13px] text-[#212121] font-normal">
+                            {platform}
+                          </div>
+
+                          {/* Position */}
+                          <div className="flex-1 min-w-0">
+                            {position !== null ? (
+                              <span className="text-[13px] text-[#212121] font-normal">{position}</span>
+                            ) : (
+                              <span className="text-[13px] text-[#8f8f8f] font-normal">No mention</span>
+                            )}
+                          </div>
+
+                          {/* All mentions — competitor avatars with hover dropdown */}
+                          <MentionsCell competitors={competitors} />
+
+                          {/* Action */}
+                          <div className="flex-1 min-w-0">
+                            <button
+                              className="text-[13px] text-[#1976d2] font-normal hover:underline transition-colors"
+                              onClick={() => openModal(entry, platform, prompt)}
+                            >
+                              View response
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
                 )}
               </div>
-            </div>
-          )
-        })}
+            )
+          })}
+        </div>
+
       </div>
 
-    </div>
+      <AiResponseModal
+        open={modalEntry !== null}
+        onClose={() => setModalEntry(null)}
+        entry={modalEntry}
+        themeTitle={themeLabel}
+      />
+    </>
   )
 }

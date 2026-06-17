@@ -8,7 +8,7 @@ import { AUSTRALIAN_LOCATIONS } from '../../data/locationsData'
 // ── Filter data ───────────────────────────────────────────────────────────────
 
 const ALL_TYPES: RecCategory[] = [
-  'Local SEO',
+  'Accuracy',
   'Content',
   'Conversion',
   'Website content',
@@ -16,7 +16,7 @@ const ALL_TYPES: RecCategory[] = [
   'Reviews',
   'Social',
   'FAQ',
-  'Trust & Reputation',
+  'Outreach',
   'Technical SEO',
 ]
 

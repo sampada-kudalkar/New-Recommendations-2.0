@@ -5,7 +5,8 @@ import type { Recommendation, RecCategory } from '../../../types'
 import type { BusinessMetrics } from '../../../types'
 import { getLocationsForRec } from '../../../data/locationsData'
 import { getDisplayScore } from '../../../data/zeroScoreReplacements'
-import { nsaThemesConfig } from '../../../data/nsaThemesConfig'
+import { formatThemeLabel } from '../../../data/nsaThemesConfig'
+import { getPrimaryCompScore } from '../../../utils/scoreUtils'
 import {
   Table,
   TableHeader,
@@ -28,11 +29,11 @@ const CATEGORY_METRIC: Partial<Record<RecCategory, { label: string; key: keyof B
   'Website content':     { label: 'Citation share',   key: 'citationShare' },
   'FAQ':                 { label: 'Citation share',   key: 'citationShare' },
   'Social':              { label: 'Citation share',   key: 'citationShare' },
-  'Local SEO':           { label: 'Visibility score', key: 'visibility' },
+  'Accuracy':            { label: 'Accuracy score',   key: 'visibility' },
   'Technical SEO':       { label: 'Visibility score', key: 'visibility' },
   'Website improvement': { label: 'Visibility score', key: 'visibility' },
   'Conversion':          { label: 'Visibility score', key: 'visibility' },
-  'Trust & Reputation':  { label: 'Sentiment score',  key: 'sentiment' },
+  'Outreach':            { label: 'Sentiment score',  key: 'sentiment' },
   'Reviews':             { label: 'Sentiment score',  key: 'sentiment' },
 }
 
@@ -40,14 +41,9 @@ const CATEGORY_METRIC: Partial<Record<RecCategory, { label: string; key: keyof B
 function PerformanceBar({ rec, metrics }: { rec: Recommendation; metrics: BusinessMetrics }) {
   const meta = CATEGORY_METRIC[rec.category]
   const current = rec.youScore !== undefined ? rec.youScore : (meta ? (metrics[meta.key] as number) : 0)
-  const compPct = rec.compScore !== undefined
-    ? rec.compScore
-    : (() => {
-        const compTotal    = rec.competitors.reduce((s, c) => s + c.totalCitations, 0)
-        const avgCitations = rec.competitors.length > 0 ? compTotal / rec.competitors.length : 0
-        const maxCitations = rec.competitors[0]?.totalCitations ?? 1
-        return Math.min((avgCitations / maxCitations) * (current * 1.1), 100)
-      })()
+  const noCompData = rec.compScore === undefined && rec.competitors.length === 0
+  const rawCompPct = getPrimaryCompScore(rec, current)
+  const compPct = rawCompPct ?? 0
 
   const label = meta?.label ?? 'Score'
   const displayScore = getDisplayScore(rec.id, current)
@@ -60,7 +56,7 @@ function PerformanceBar({ rec, metrics }: { rec: Recommendation; metrics: Busine
         </span>
         <span className="text-[14px] text-[#bdbdbd] font-normal leading-[20px]">|</span>
         <span className="text-[14px] text-[#212121] font-normal leading-[20px] whitespace-nowrap">
-          {compPct.toFixed(1)}%
+          {noCompData ? 'NA' : `${compPct.toFixed(1)}%`}
         </span>
       </div>
       <span className="text-[12px] text-[#757575] font-normal leading-[16px]">
@@ -109,7 +105,7 @@ function PinIcon() {
 }
 
 // ── Sort types ────────────────────────────────────────────────────────────────
-type SortKey = 'recommendation' | 'type' | 'impact' | 'performance' | 'locations'
+type SortKey = 'recommendation' | 'impact' | 'performance' | 'locations'
 type SortDir = 'asc' | 'desc'
 
 interface Props {
@@ -173,8 +169,6 @@ export default function TableViewV2({ recommendations, metrics }: Props) {
     let cmp = 0
     if (sortKey === 'recommendation') {
       cmp = a.title.localeCompare(b.title)
-    } else if (sortKey === 'type') {
-      cmp = a.category.localeCompare(b.category)
     } else if (sortKey === 'impact') {
       const order: Record<string, number> = { 'Quick win': 0, 'Medium': 1, 'Bigger lift': 2 }
       cmp = (order[a.effort] ?? 1) - (order[b.effort] ?? 1)
@@ -230,20 +224,18 @@ export default function TableViewV2({ recommendations, metrics }: Props) {
         <Table className="w-full border-collapse" style={{ tableLayout: 'fixed' }}>
           {/* ── Column widths ─────────────────────────────────────── */}
           <colgroup>
+            <col style={{ width: '22%' }} />
+            <col style={{ width: '38%' }} />
+            <col style={{ width: '10%' }} />
             <col style={{ width: '15%' }} />
-            <col style={{ width: '10%' }} />
-            <col style={{ width: '43%' }} />
-            <col style={{ width: '10%' }} />
-            <col style={{ width: '10%' }} />
-            <col style={{ width: '12%' }} />
+            <col style={{ width: '15%' }} />
           </colgroup>
 
           {/* ── Header ───────────────────────────────────────────── */}
           <TableHeader>
             <TableRow className="border-b border-[#eaeaea] hover:bg-transparent">
               <SortableHeader label="Recommendations"  colKey="recommendation" className="py-3" />
-              <SortableHeader label="Type"             colKey="type"           className="py-3" />
-              <SortableHeader label="Impact"           colKey="impact"         className="py-3" />
+              <SortableHeader label="Impact"           colKey="impact"         className="py-3 pl-8" />
               <TableHead className="py-3 text-left">
                 <span className="text-[14px] font-normal leading-[20px] text-[#555]">Theme</span>
               </TableHead>
@@ -277,19 +269,17 @@ export default function TableViewV2({ recommendations, metrics }: Props) {
                   >
                     {/* Col 1 — Recommendations */}
                     <TableCell className="py-4 align-top">
-                      <p className="text-[14px] text-[#212121] leading-[22px] font-normal group-hover:text-primary transition-colors pr-4 whitespace-normal">
-                        {rec.title}
-                      </p>
+                      <div className="flex flex-col gap-[2px]">
+                        <span className="text-[11px] text-[#888] font-normal leading-[16px] tracking-[0.4px]">
+                          {rec.category.charAt(0).toUpperCase() + rec.category.slice(1).toLowerCase()}
+                        </span>
+                        <p className="text-[14px] text-[#212121] leading-[22px] font-normal group-hover:text-primary transition-colors pr-4 whitespace-normal">
+                          {rec.title}
+                        </p>
+                      </div>
                     </TableCell>
 
-                    {/* Col 2 — Type */}
-                    <TableCell className="py-4 align-top">
-                      <span className="text-[14px] text-[#212121] font-normal leading-[20px] whitespace-nowrap">
-                        {rec.category}
-                      </span>
-                    </TableCell>
-
-                    {/* Col 3 — Impact */}
+                    {/* Col 2 — Impact */}
                     <TableCell className="py-4 align-top">
                       <div className="flex items-start gap-2 pr-4">
                         <span className="flex-shrink-0 w-4 h-4 mt-0.5 flex items-center justify-center">
@@ -316,26 +306,28 @@ export default function TableViewV2({ recommendations, metrics }: Props) {
                       </div>
                     </TableCell>
 
-                    {/* Col 4 — Theme */}
+                    {/* Col 3 — Theme */}
                     <TableCell className="py-4 align-top pr-4">
                       <span className="text-[14px] text-[#212121] font-normal leading-[20px] whitespace-normal break-words">
-                        {rec.themeId ? (nsaThemesConfig[rec.themeId]?.label ?? rec.themeId) : '—'}
+                        {rec.themeId ? formatThemeLabel(rec.themeId) : '—'}
                       </span>
                     </TableCell>
 
-                    {/* Col 5 — You vs competitor */}
+                    {/* Col 4 — You vs competitor */}
                     <TableCell className="py-4 align-top">
                       <div className="pr-4">
                         <PerformanceBar rec={rec} metrics={metrics} />
                       </div>
                     </TableCell>
 
-                    {/* Col 6 — Locations count + chevron; Accept/Reject anchored to row right */}
+                    {/* Col 5 — Locations count + chevron; Accept/Reject anchored to row right */}
                     <TableCell className="py-4 align-top">
-                      {/* Count + chevron (on hover) */}
+                      {/* Location name/count + chevron (on hover) */}
                       <div className="flex items-center gap-1 min-h-[36px]">
-                        <span className="text-[14px] text-[#212121] leading-[22px] w-6 flex-shrink-0">
-                          {locationCount}
+                        <span className="text-[14px] text-[#212121] leading-[22px] flex-shrink-0 max-w-[100px] truncate">
+                          {locationCount === 1
+                            ? (rec.locationNames?.[0] ?? getLocationsForRec(rec.id, 1)[0] ?? String(locationCount))
+                            : locationCount}
                         </span>
                         <button
                           ref={el => { chevronRefs.current[rec.id] = el }}

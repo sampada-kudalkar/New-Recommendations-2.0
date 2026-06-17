@@ -6,7 +6,8 @@ import { getLocationsForRec } from '../../data/locationsData'
 import { useAppStore } from '../../store/useAppStore'
 import WhyThisMattersCard from '../recommendations/v2/WhyThisMattersCard'
 import CompetitorCitationsCardV2 from '../recommendations/v2/CompetitorCitationsCardV2'
-import AiResponseTableV2 from '../recommendations/v2/AiResponseTableV2'
+import TopCompetitorBlogsCard from '../recommendations/v2/TopCompetitorBlogsCard'
+import TopMentionsCard from '../recommendations/v2/TopMentionsCard'
 
 
 const BASE = import.meta.env.BASE_URL
@@ -484,8 +485,36 @@ export default function ContentDetailPageV2() {
         {/* ═══ ROW 1 — v2: WhyThisMattersCard replaces ScoreCard + Why it matters ═══ */}
         <WhyThisMattersCard rec={rec} metrics={metrics} />
 
-        {/* ═══ CARD 2: Generated blog / gap card (Figma 368-27177) ═════════ */}
-        <div className="bg-white border border-[#eaeaea] rounded-lg">
+        {/* ═══ CARD 2: Why does this recommendation matter ═════════════ */}
+        <div className="bg-white border border-[#eaeaea] rounded-lg px-5 py-4">
+          <p className="text-[16px] text-[#212121] leading-[24px] font-normal mb-3">
+            Why does this recommendation matter
+          </p>
+          {rec.whyItWorks.length > 0 ? (
+            <ul className="flex flex-col gap-2 list-none pl-0">
+              {rec.whyItWorks.map((point, i) => (
+                <li key={i} className="text-[14px] text-[#555] leading-[20px]">
+                  {point}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-[14px] text-[#555] leading-[20px]">{rec.description}</p>
+          )}
+        </div>
+
+        {/* ═══ CARD 3: What will fixing this do ════════════════════════ */}
+        <div className="bg-white border border-[#eaeaea] rounded-lg px-5 py-4">
+          <p className="text-[16px] text-[#212121] leading-[24px] font-normal mb-3">
+            What will fixing this do
+          </p>
+          <p className="text-[14px] text-[#555] leading-[20px]">
+            {rec.expectedImpact ?? rec.description}
+          </p>
+        </div>
+
+        {/* ═══ OLD CARD 2: Generated blog / gap card — hidden ══════════ */}
+        {false && <div className="bg-white border border-[#eaeaea] rounded-lg">
           {/* Header */}
           <div className="px-5 pt-4 pb-2">
             <div className="flex items-start justify-between gap-4">
@@ -537,9 +566,9 @@ export default function ContentDetailPageV2() {
               />
             )}
           </div>
-        </div>
+        </div>}
 
-        {/* ═══ CARD 3: What to do next (stepper) ══════════════════════════ */}
+        {/* ═══ CARD 4: What to do next (stepper) ══════════════════════════ */}
         <div className="bg-white border border-[#eaeaea] rounded-lg">
           <div className="px-5 pt-5 pb-3">
             <p className="text-[16px] text-[#212121] leading-[24px] font-normal" style={{ marginBottom: 4 }}>What to do next</p>
@@ -548,7 +577,43 @@ export default function ContentDetailPageV2() {
 
           {/* Steps */}
           <div className="pb-2">
-            {(rec.category === 'FAQ'
+            {rec.checklist.length > 0
+              ? rec.checklist.map((step, idx) => {
+                  const isLast = idx === rec.checklist.length - 1
+                  const links = step.stepType === 'link' && step.links ? step.links : []
+                  return (
+                    <div key={step.id} className="flex gap-3 items-stretch px-5">
+                      <div className="flex flex-col items-center flex-shrink-0">
+                        <div className="w-5 h-5 border border-[#eaeaea] rounded-full flex items-center justify-center text-[11px] text-[#555] leading-none flex-shrink-0 bg-white mt-0.5">
+                          {idx + 1}
+                        </div>
+                        {!isLast && <div className="w-px flex-1 bg-[#eaeaea] mt-1" />}
+                      </div>
+                      <div className={`flex flex-col flex-1 min-w-0 pt-0.5 ${!isLast ? 'pb-5' : 'pb-1'}`}>
+                        <p className="text-[14px] text-[#212121] leading-[22px]">{step.label}</p>
+                        {step.description && (
+                          <p className="text-[13px] text-[#555] leading-[20px] mt-0.5">{step.description}</p>
+                        )}
+                        {links.length > 0 && (
+                          <div className="flex flex-col gap-1 mt-1">
+                            {links.map(link => (
+                              <a
+                                key={link.url}
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[13px] text-[#1976d2] hover:underline leading-[20px] break-all"
+                              >
+                                {link.label}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })
+              : (rec.category === 'FAQ'
               ? [
                   {
                     id: 'step-1',
@@ -666,11 +731,11 @@ export default function ContentDetailPageV2() {
           </div>
         </div>
 
-        {/* ═══ CARD 4: Competitor citations (v2 — horizontal grid, no table) ═ */}
+        {/* ═══ CARD 5: Competitor citations (v2 — horizontal grid, no table) ═ */}
         {rec.competitors.length > 0 && <CompetitorCitationsCardV2 rec={rec} />}
 
-        {/* ═══ CARD 5: How did AI sites respond (v2 — 3 columns) ══════════ */}
-        <AiResponseTableV2 rec={rec} />
+        {/* ═══ CARD 6: Top competitor blogs cited by AI ════════════════ */}
+        <TopCompetitorBlogsCard rec={rec} />
 
         {/* bottom padding */}
         <div className="h-4 flex-shrink-0" />
@@ -834,9 +899,14 @@ export default function ContentDetailPageV2() {
 
         {/* HIDDEN v2 — moved to Recommendation tab as AiResponseTableV2 */}
 
-        {/* bottom padding */}
-        <div className="h-4 flex-shrink-0" />
       </div>
+      )}
+
+      {/* TopMentionsCard — A/B test for dental implants rec only */}
+      {rec.id === '43d87f49-4a5b-45c8-b656-d70276b5b068' && (
+        <div className="px-6 pb-5">
+          <TopMentionsCard />
+        </div>
       )}
 
       {/* Location hover popover — portal */}
