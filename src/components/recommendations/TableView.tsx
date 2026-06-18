@@ -25,11 +25,11 @@ const CATEGORY_METRIC: Partial<Record<RecCategory, { label: string; key: keyof B
   'Website content':     { label: 'Citation share',   key: 'citationShare' },
   'FAQ':                 { label: 'Citation share',   key: 'citationShare' },
   'Social':              { label: 'Citation share',   key: 'citationShare' },
-  'Local SEO':           { label: 'Visibility score', key: 'visibility' },
+  'Accuracy':            { label: 'Accuracy score',   key: 'visibility' },
   'Technical SEO':       { label: 'Visibility score', key: 'visibility' },
   'Website improvement': { label: 'Visibility score', key: 'visibility' },
   'Conversion':          { label: 'Visibility score', key: 'visibility' },
-  'Trust & Reputation':  { label: 'Sentiment score',  key: 'sentiment' },
+  'Outreach':            { label: 'Sentiment score',  key: 'sentiment' },
   'Reviews':             { label: 'Sentiment score',  key: 'sentiment' },
 }
 
@@ -78,6 +78,7 @@ function PinIcon() {
 function PerformanceBar({ rec, metrics }: { rec: Recommendation; metrics: BusinessMetrics }) {
   const meta = CATEGORY_METRIC[rec.category]
   const current = rec.youScore !== undefined ? rec.youScore : (meta ? (metrics[meta.key] as number) : 0)
+  const noCompData = rec.compScore === undefined && rec.competitors.length === 0
   const compPct = rec.compScore !== undefined
     ? rec.compScore
     : (() => {
@@ -98,7 +99,7 @@ function PerformanceBar({ rec, metrics }: { rec: Recommendation; metrics: Busine
         </span>
         <span className="text-[14px] text-[#bdbdbd] font-normal leading-[20px]">|</span>
         <span className="text-[14px] text-[#212121] font-normal leading-[20px] whitespace-nowrap">
-          {compPct.toFixed(1)}%
+          {noCompData ? 'NA' : `${compPct.toFixed(1)}%`}
         </span>
       </div>
       <span className="text-[12px] text-[#757575] font-normal leading-[16px]">
@@ -109,7 +110,7 @@ function PerformanceBar({ rec, metrics }: { rec: Recommendation; metrics: Busine
 }
 
 // ── Sort types ────────────────────────────────────────────────────────────────
-type SortKey = 'recommendation' | 'type' | 'impact' | 'performance' | 'locations'
+type SortKey = 'recommendation' | 'impact' | 'performance' | 'locations'
 type SortDir = 'asc' | 'desc'
 
 interface Props {
@@ -165,8 +166,6 @@ export default function TableView({ recommendations, metrics }: Props) {
     let cmp = 0
     if (sortKey === 'recommendation') {
       cmp = a.title.localeCompare(b.title)
-    } else if (sortKey === 'type') {
-      cmp = a.category.localeCompare(b.category)
     } else if (sortKey === 'impact') {
       const order: Record<string, number> = { 'Quick win': 0, 'Medium': 1, 'Bigger lift': 2 }
       cmp = (order[a.effort] ?? 1) - (order[b.effort] ?? 1)
@@ -225,18 +224,16 @@ export default function TableView({ recommendations, metrics }: Props) {
         <Table className="w-full border-collapse" style={{ tableLayout: 'fixed' }}>
           {/* ── Column widths ─────────────────────────────────────── */}
           <colgroup>
+            <col style={{ width: '25%' }} />
+            <col style={{ width: '48%' }} />
             <col style={{ width: '18%' }} />
-            <col style={{ width: '12%' }} />
-            <col style={{ width: '40%' }} />
-            <col style={{ width: '18%' }} />
-            <col style={{ width: '12%' }} />
+            <col style={{ width: '9%' }} />
           </colgroup>
 
           {/* ── Header ───────────────────────────────────────────── */}
           <TableHeader>
             <TableRow className="border-b border-[#eaeaea] hover:bg-transparent">
               <SortableHeader label="Recommendations"    colKey="recommendation" className="py-3" />
-              <SortableHeader label="Type"               colKey="type" className="py-3" />
               <SortableHeader label="Impact"             colKey="impact" className="py-3" />
               <SortableHeader label="You vs competitor" colKey="performance" className="py-3" />
               {/* Locations header — left-aligned */}
@@ -270,19 +267,17 @@ export default function TableView({ recommendations, metrics }: Props) {
 
                   {/* Col 1 — Recommendations */}
                   <TableCell className="py-4 align-top">
-                    <p className="text-[14px] text-[#212121] leading-[22px] font-normal group-hover:text-primary transition-colors pr-4 whitespace-normal">
-                      {rec.title}
-                    </p>
+                    <div className="flex flex-col gap-[2px]">
+                      <span className="text-[11px] text-[#888] font-normal leading-[16px] uppercase tracking-[0.4px]">
+                        {rec.category}
+                      </span>
+                      <p className="text-[14px] text-[#212121] leading-[22px] font-normal group-hover:text-primary transition-colors pr-4 whitespace-normal">
+                        {rec.title}
+                      </p>
+                    </div>
                   </TableCell>
 
-                  {/* Col 2 — Type */}
-                  <TableCell className="py-4 align-top">
-                    <span className="text-[14px] text-[#212121] font-normal leading-[20px] whitespace-nowrap">
-                      {rec.category}
-                    </span>
-                  </TableCell>
-
-                  {/* Col 3 — Impact */}
+                  {/* Col 2 — Impact */}
                   <TableCell className="py-4 align-top">
                     <div className="flex items-start gap-2 pr-4">
                       {/* Fixed-width icon placeholder so text always aligns */}
@@ -308,14 +303,14 @@ export default function TableView({ recommendations, metrics }: Props) {
                     </div>
                   </TableCell>
 
-                  {/* Col 4 — You vs competitor */}
+                  {/* Col 3 — You vs competitor */}
                   <TableCell className="py-4 align-top">
                     <div className="pr-4">
                       <PerformanceBar rec={rec} metrics={metrics} />
                     </div>
                   </TableCell>
 
-                  {/* Col 5 — Locations & Actions */}
+                  {/* Col 4 — Locations & Actions */}
                   <TableCell className="py-4 pr-6 align-top relative">
                     <div className="flex items-center gap-1.5 h-[32px]">
                       {/* Always show location count */}

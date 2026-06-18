@@ -25,7 +25,10 @@ function getMetricForCategory(category: string): { label: string; key: MetricsKe
   if (['Content', 'Website content', 'FAQ', 'Social'].includes(category)) {
     return { label: 'Citation share', key: 'citationShare' }
   }
-  if (['Local SEO', 'Technical SEO', 'Website improvement', 'Conversion'].includes(category)) {
+  if (['Accuracy'].includes(category)) {
+    return { label: 'Accuracy score', key: 'visibility' }
+  }
+  if (['Technical SEO', 'Website improvement', 'Conversion'].includes(category)) {
     return { label: 'Visibility score', key: 'visibility' }
   }
   return { label: 'Sentiment score', key: 'sentiment' }
@@ -38,6 +41,7 @@ function ScoreCard({ rec, metrics }: { rec: Recommendation; metrics: BusinessMet
   const { label: metricLabel, key: metricsKey } = getMetricForCategory(rec.category)
   const rawScore = rec.youScore !== undefined ? rec.youScore : metrics[metricsKey]
   const current = getDisplayScore(rec.id, rawScore)
+  const noCompData = rec.compScore === undefined && rec.competitors.length === 0
   const compPct = rec.compScore !== undefined
     ? rec.compScore
     : (() => {
@@ -48,7 +52,7 @@ function ScoreCard({ rec, metrics }: { rec: Recommendation; metrics: BusinessMet
       })()
 
   const yourW = Math.min(current, 100)
-  const compW = Math.min(compPct, 100)
+  const compW = noCompData ? 0 : Math.min(compPct, 100)
 
   return (
     <div className="bg-white border border-[#eaeaea] rounded-lg p-5 flex flex-col gap-3 h-full">
@@ -61,12 +65,19 @@ function ScoreCard({ rec, metrics }: { rec: Recommendation; metrics: BusinessMet
         <p className="absolute text-[28px] font-normal text-[#212121] leading-none" style={{ left: 0 }}>
           {current.toFixed(1)}%
         </p>
-        <p
-          className="absolute text-[28px] font-normal text-[#212121] leading-none"
-          style={{ left: `${compW}%` }}
-        >
-          {compPct.toFixed(1)}%
-        </p>
+        {!noCompData && (
+          <p
+            className="absolute text-[28px] font-normal text-[#212121] leading-none"
+            style={{ left: `${compW}%` }}
+          >
+            {compPct.toFixed(1)}%
+          </p>
+        )}
+        {noCompData && (
+          <p className="absolute text-[28px] font-normal text-[#888] leading-none" style={{ left: '40%' }}>
+            NA
+          </p>
+        )}
       </div>
 
       <div className="flex items-center gap-4 mt-2">
@@ -74,22 +85,26 @@ function ScoreCard({ rec, metrics }: { rec: Recommendation; metrics: BusinessMet
           <span className="w-2 h-2 rounded-full bg-[#1976d2] flex-shrink-0" />
           Current score
         </span>
-        <span className="flex items-center gap-1.5 text-[11px] text-[#555]">
-          <span className="w-2 h-2 rounded-full bg-[#e53935] flex-shrink-0" />
-          Competitor average
-        </span>
+        {!noCompData && (
+          <span className="flex items-center gap-1.5 text-[11px] text-[#555]">
+            <span className="w-2 h-2 rounded-full bg-[#e53935] flex-shrink-0" />
+            Competitor average
+          </span>
+        )}
       </div>
 
       <div className="relative h-1.5 bg-[#eaeaea] rounded-full mt-2">
         <div className="absolute left-0 top-0 h-full bg-[#1976d2] rounded-full" style={{ width: `${yourW}%` }} />
-        {compW > yourW && (
+        {!noCompData && compW > yourW && (
           <div
             className="absolute top-0 h-full bg-[#F99E8F] rounded-full"
             style={{ left: `${yourW}%`, width: `${compW - yourW}%` }}
           />
         )}
         <div className="absolute top-1/2 w-2 h-2 bg-[#1976d2] rounded-full border-2 border-white shadow-sm" style={{ left: `${yourW}%`, transform: 'translate(-50%, -50%)', boxSizing: 'content-box' }} />
-        <div className="absolute top-1/2 w-2 h-2 bg-[#e53935] rounded-full border-2 border-white shadow-sm" style={{ left: `${compW}%`, transform: 'translate(-50%, -50%)', boxSizing: 'content-box' }} />
+        {!noCompData && (
+          <div className="absolute top-1/2 w-2 h-2 bg-[#e53935] rounded-full border-2 border-white shadow-sm" style={{ left: `${compW}%`, transform: 'translate(-50%, -50%)', boxSizing: 'content-box' }} />
+        )}
       </div>
     </div>
   )

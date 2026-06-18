@@ -11,16 +11,6 @@ import CompetitorCitationsCardV2 from '../recommendations/v2/CompetitorCitations
 import AiResponseTableV2 from '../recommendations/v2/AiResponseTableV2'
 
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function PinIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
-      <path d="M20 10c0 6-8 13-8 13s-8-7-8-13a8 8 0 0 1 16 0Z" />
-      <circle cx="12" cy="10" r="3" />
-    </svg>
-  )
-}
-
 // ── Category → metric mapping (kept for potential future use) ─────────────────
 type MetricsKey = 'citationShare' | 'visibility' | 'sentiment'
 
@@ -28,7 +18,10 @@ function getMetricForCategory(category: string): { label: string; key: MetricsKe
   if (['Content', 'Website content', 'FAQ', 'Social'].includes(category)) {
     return { label: 'Citation share', key: 'citationShare' }
   }
-  if (['Local SEO', 'Technical SEO', 'Website improvement', 'Conversion'].includes(category)) {
+  if (['Accuracy'].includes(category)) {
+    return { label: 'Accuracy score', key: 'visibility' }
+  }
+  if (['Technical SEO', 'Website improvement', 'Conversion'].includes(category)) {
     return { label: 'Visibility score', key: 'visibility' }
   }
   return { label: 'Sentiment score', key: 'sentiment' }
@@ -41,6 +34,7 @@ function ScoreCard({ rec, metrics }: { rec: Recommendation; metrics: BusinessMet
   const { label: metricLabel, key: metricsKey } = getMetricForCategory(rec.category)
   const rawScore = rec.youScore !== undefined ? rec.youScore : metrics[metricsKey]
   const current = getDisplayScore(rec.id, rawScore)
+  const noCompData = rec.compScore === undefined && rec.competitors.length === 0
   const compPct = rec.compScore !== undefined
     ? rec.compScore
     : (() => {
@@ -51,7 +45,7 @@ function ScoreCard({ rec, metrics }: { rec: Recommendation; metrics: BusinessMet
       })()
 
   const yourW = Math.min(current, 100)
-  const compW = Math.min(compPct, 100)
+  const compW = noCompData ? 0 : Math.min(compPct, 100)
 
   return (
     <div className="bg-white border border-[#eaeaea] rounded-lg p-5 flex flex-col gap-3 h-full">
@@ -64,12 +58,19 @@ function ScoreCard({ rec, metrics }: { rec: Recommendation; metrics: BusinessMet
         <p className="absolute text-[28px] font-normal text-[#212121] leading-none" style={{ left: 0 }}>
           {current.toFixed(1)}%
         </p>
-        <p
-          className="absolute text-[28px] font-normal text-[#212121] leading-none"
-          style={{ left: `${compW}%` }}
-        >
-          {compPct.toFixed(1)}%
-        </p>
+        {!noCompData && (
+          <p
+            className="absolute text-[28px] font-normal text-[#212121] leading-none"
+            style={{ left: `${compW}%` }}
+          >
+            {compPct.toFixed(1)}%
+          </p>
+        )}
+        {noCompData && (
+          <p className="absolute text-[28px] font-normal text-[#888] leading-none" style={{ left: '40%' }}>
+            NA
+          </p>
+        )}
       </div>
 
       <div className="flex items-center gap-4 mt-2">
@@ -77,22 +78,26 @@ function ScoreCard({ rec, metrics }: { rec: Recommendation; metrics: BusinessMet
           <span className="w-2 h-2 rounded-full bg-[#1976d2] flex-shrink-0" />
           Current score
         </span>
-        <span className="flex items-center gap-1.5 text-[11px] text-[#555]">
-          <span className="w-2 h-2 rounded-full bg-[#e53935] flex-shrink-0" />
-          Competitor average
-        </span>
+        {!noCompData && (
+          <span className="flex items-center gap-1.5 text-[11px] text-[#555]">
+            <span className="w-2 h-2 rounded-full bg-[#e53935] flex-shrink-0" />
+            Competitor average
+          </span>
+        )}
       </div>
 
       <div className="relative h-1.5 bg-[#eaeaea] rounded-full mt-2">
         <div className="absolute left-0 top-0 h-full bg-[#1976d2] rounded-full" style={{ width: `${yourW}%` }} />
-        {compW > yourW && (
+        {!noCompData && compW > yourW && (
           <div
             className="absolute top-0 h-full bg-[#F99E8F] rounded-full"
             style={{ left: `${yourW}%`, width: `${compW - yourW}%` }}
           />
         )}
         <div className="absolute top-1/2 w-2 h-2 bg-[#1976d2] rounded-full border-2 border-white shadow-sm" style={{ left: `${yourW}%`, transform: 'translate(-50%, -50%)', boxSizing: 'content-box' }} />
-        <div className="absolute top-1/2 w-2 h-2 bg-[#e53935] rounded-full border-2 border-white shadow-sm" style={{ left: `${compW}%`, transform: 'translate(-50%, -50%)', boxSizing: 'content-box' }} />
+        {!noCompData && (
+          <div className="absolute top-1/2 w-2 h-2 bg-[#e53935] rounded-full border-2 border-white shadow-sm" style={{ left: `${compW}%`, transform: 'translate(-50%, -50%)', boxSizing: 'content-box' }} />
+        )}
       </div>
     </div>
   )
@@ -105,20 +110,13 @@ export default function GenericDetailPageV2() {
   const _recMaybe = recommendations.find(r => r.id === id)
 
   const [showLocHover, setShowLocHover] = useState(false)
-  const [locPopoverPos, setLocPopoverPos] = useState({ top: 0, left: 0 })
+  const [locPopoverPos] = useState({ top: 0, left: 0 })
 
   if (!_recMaybe) return null
   const rec = _recMaybe
 
   const locationCount = rec.locations ?? 1
   const locations     = getLocationsForRec(rec.id, locationCount)
-  const firstLocation = locations[0] ?? ''
-
-  const handleLocMouseEnter = (e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    setLocPopoverPos({ top: rect.bottom + 8, left: rect.left })
-    setShowLocHover(true)
-  }
 
   return (
     <div className="flex-1 overflow-y-auto bg-white flex flex-col">
@@ -145,37 +143,35 @@ export default function GenericDetailPageV2() {
           </div>
         )}
 
-        {/* ═══ CARD 2: Recommendation overview ════════════════════════════ */}
-        <div className="bg-white border border-[#eaeaea] rounded-lg">
-          <div className="flex items-start justify-between gap-4 px-5 pt-4 pb-2">
-            <div className="flex-1 min-w-0">
-              <p className="text-[16px] text-[#555] leading-[24px] tracking-[-0.32px] font-normal">
-                {rec.title}
-              </p>
-            </div>
-            {locationCount > 0 && (
-              <div
-                className="flex items-center gap-1 flex-shrink-0 cursor-pointer"
-                onMouseEnter={handleLocMouseEnter}
-                onMouseLeave={() => setShowLocHover(false)}
-              >
-                <PinIcon />
-                <span
-                  className={`text-[12px] text-[#555] leading-[normal] whitespace-nowrap ${locationCount > 1 ? 'border-b border-dashed border-[#888]' : ''}`}
-                >
-                  {locationCount === 1 ? firstLocation : `${locationCount} locations`}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="px-5 pb-5">
-            <p className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">
-              {rec.expectedImpact ?? rec.description}
-            </p>
-          </div>
+        {/* ═══ CARD 2: Why does this recommendation matter ═════════════ */}
+        <div className="bg-white border border-[#eaeaea] rounded-lg px-5 py-4">
+          <p className="text-[16px] text-[#212121] leading-[24px] font-normal mb-3">
+            Why does this recommendation matter
+          </p>
+          {rec.whyItWorks.length > 0 ? (
+            <ul className="flex flex-col gap-2 list-none pl-0">
+              {rec.whyItWorks.map((point, i) => (
+                <li key={i} className="text-[14px] text-[#555] leading-[20px]">
+                  {point}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-[14px] text-[#555] leading-[20px]">{rec.description}</p>
+          )}
         </div>
 
-        {/* ═══ CARD 3: What to do next (stepper) ══════════════════════════ */}
+        {/* ═══ CARD 3: What will fixing this do ════════════════════════ */}
+        <div className="bg-white border border-[#eaeaea] rounded-lg px-5 py-4">
+          <p className="text-[16px] text-[#212121] leading-[24px] font-normal mb-3">
+            What will fixing this do
+          </p>
+          <p className="text-[14px] text-[#555] leading-[20px]">
+            {rec.expectedImpact ?? rec.description}
+          </p>
+        </div>
+
+        {/* ═══ CARD 4: What to do next (stepper) ══════════════════════════ */}
         <div className="bg-white border border-[#eaeaea] rounded-lg">
           <div className="px-5 pt-5 pb-3">
             <p className="text-[16px] text-[#212121] leading-[24px] font-normal">What to do next</p>
@@ -195,7 +191,24 @@ export default function GenericDetailPageV2() {
                   </div>
                   <div className={`flex flex-col flex-1 min-w-0 pt-0.5 ${!isLast ? 'pb-5' : 'pb-1'}`}>
                     <p className="text-[14px] text-[#212121] leading-[22px]">{step.label}</p>
-                    <p className="text-[13px] text-[#555] leading-[20px] mt-0.5">{step.description}</p>
+                    {step.description && (
+                      <p className="text-[13px] text-[#555] leading-[20px] mt-0.5">{step.description}</p>
+                    )}
+                    {step.stepType === 'link' && step.links && step.links.length > 0 && (
+                      <div className="flex flex-col gap-1 mt-1">
+                        {step.links.map(link => (
+                          <a
+                            key={link.url}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[13px] text-[#1976d2] hover:underline leading-[20px] break-all"
+                          >
+                            {link.label}
+                          </a>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               )

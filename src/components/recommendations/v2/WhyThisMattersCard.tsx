@@ -1,18 +1,19 @@
 import type { Recommendation, RecCategory } from '../../../types'
 import type { BusinessMetrics } from '../../../types'
 import { getDisplayScore } from '../../../data/zeroScoreReplacements'
-import { nsaThemesConfig } from '../../../data/nsaThemesConfig'
+import { formatThemeLabel } from '../../../data/nsaThemesConfig'
+import { getPrimaryCompScore } from '../../../utils/scoreUtils'
 
 const CATEGORY_METRIC: Partial<Record<RecCategory, { label: string; key: keyof BusinessMetrics }>> = {
   'Content':             { label: 'Citation share',   key: 'citationShare' },
   'Website content':     { label: 'Citation share',   key: 'citationShare' },
   'FAQ':                 { label: 'Citation share',   key: 'citationShare' },
   'Social':              { label: 'Citation share',   key: 'citationShare' },
-  'Local SEO':           { label: 'Visibility score', key: 'visibility' },
+  'Accuracy':            { label: 'Accuracy score',   key: 'visibility' },
   'Technical SEO':       { label: 'Visibility score', key: 'visibility' },
   'Website improvement': { label: 'Visibility score', key: 'visibility' },
   'Conversion':          { label: 'Visibility score', key: 'visibility' },
-  'Trust & Reputation':  { label: 'Sentiment score',  key: 'sentiment' },
+  'Outreach':            { label: 'Sentiment score',  key: 'sentiment' },
   'Reviews':             { label: 'Sentiment score',  key: 'sentiment' },
 }
 
@@ -24,7 +25,7 @@ interface Props {
 export default function WhyThisMattersCard({ rec, metrics }: Props) {
   const meta = CATEGORY_METRIC[rec.category]
   const metricLabel = meta?.label ?? 'Score'
-  const themeLabel = nsaThemesConfig[rec.themeId]?.label ?? rec.category
+  const themeLabel = rec.themeId ? formatThemeLabel(rec.themeId) : rec.category
 
   const rawYou = rec.youScore !== undefined
     ? rec.youScore
@@ -32,13 +33,22 @@ export default function WhyThisMattersCard({ rec, metrics }: Props) {
   const youPct = getDisplayScore(rec.id, rawYou)
 
   // Build up to 3 competitor entries with normalised scores
+  // First competitor uses the same formula as the table's PerformanceBar for consistency
+  const primaryCompScore = getPrimaryCompScore(rec, rawYou)
   const maxCitations = rec.competitors[0]?.totalCitations ?? 1
-  const competitors = rec.competitors.slice(0, 3).map((c, i) => ({
-    name: c.name,
-    score: i === 0 && rec.compScore !== undefined
-      ? rec.compScore
-      : Math.round(Math.min((c.totalCitations / maxCitations) * (rawYou * 1.1), 100)),
-  }))
+
+  let competitors: { name: string; score: number }[]
+  if (rec.competitors.length === 0 && primaryCompScore !== null) {
+    // compScore is set but no named competitors — mirror the table's single value
+    competitors = [{ name: 'Competitor average', score: primaryCompScore }]
+  } else {
+    competitors = rec.competitors.slice(0, 3).map((c, i) => ({
+      name: c.name,
+      score: i === 0 && primaryCompScore !== null
+        ? primaryCompScore
+        : Math.round(Math.min((c.totalCitations / maxCitations) * (rawYou * 1.1), 100)),
+    }))
+  }
 
   return (
     <div
@@ -47,9 +57,9 @@ export default function WhyThisMattersCard({ rec, metrics }: Props) {
     >
       {/* Title */}
       <div className="px-[20px]">
-        <p className="text-[16px] text-[#555] leading-[24px] tracking-[-0.32px] font-normal">
+        <p className="text-[16px] text-[#212121] leading-[24px] tracking-[-0.32px] font-normal">
           What is your {metricLabel} compared to competitors for{' '}
-          <span className="text-[#555555]">'{themeLabel}'</span>
+          <span className="text-[#212121]">'{themeLabel}'</span>
         </p>
       </div>
 
@@ -70,7 +80,24 @@ export default function WhyThisMattersCard({ rec, metrics }: Props) {
         </div>
 
         {/* Competitor groups */}
-        {competitors.map((comp, i) => (
+        {competitors.length === 0 ? (
+          <div className="flex items-center gap-[40px]">
+            <div
+              className="flex items-center justify-center rounded-full"
+              style={{ width: 40, height: 32, background: '#ecf5fd' }}
+            >
+              <span className="text-[16px] text-[#212121] leading-[28px] font-normal">vs</span>
+            </div>
+            <div className="flex flex-col items-start gap-[2px]">
+              <p className="text-[32px] text-[#888] leading-[48px] tracking-[-0.64px] font-normal">
+                NA
+              </p>
+              <p className="text-[12px] text-[#888] leading-[18px] font-normal">
+                Competitor average
+              </p>
+            </div>
+          </div>
+        ) : competitors.map((comp, i) => (
           <div key={i} className="flex items-center gap-[40px]">
             {/* vs pill */}
             <div

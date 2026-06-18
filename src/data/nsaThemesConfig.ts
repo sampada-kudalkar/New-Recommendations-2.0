@@ -3,6 +3,13 @@ export interface NsaTheme {
   prompts: string[]
 }
 
+export function formatThemeLabel(themeId: string): string {
+  const configured = nsaThemesConfig[themeId]?.label
+  if (configured) return configured
+  const spaced = themeId.replace(/-/g, ' ')
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1)
+}
+
 export const nsaThemesConfig: Record<string, NsaTheme> = {
   'property-appraisals': {
     label: 'Property Appraisals',
@@ -58,6 +65,22 @@ export const nsaThemesConfig: Record<string, NsaTheme> = {
       'Find residential property leasing agencies near me specializing in lease agreement and property management.',
       'Looking for real estate companies that offer residential properties for lease with comprehensive leasing services.',
       'Top-rated residential property leasing agents who assist with lease agreements and extensions.',
+    ],
+  },
+  'teeth-whitening': {
+    label: 'teeth whitening',
+    prompts: [
+      'Find professional teeth whitening services near me',
+      'Best teeth whitening clinics in my area',
+      'Top rated laser teeth whitening providers nearby',
+    ],
+  },
+  'dental-implants': {
+    label: 'dental implants',
+    prompts: [
+      'Find dental implant specialists in Kirwan QLD',
+      'Best clinics for all-on-4 dental implants in Kirwan QLD',
+      'Locate affordable dental implant services in Kirwan QLD',
     ],
   },
 }
