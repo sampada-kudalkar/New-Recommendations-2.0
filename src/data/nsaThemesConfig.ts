@@ -75,4 +75,12 @@ export const nsaThemesConfig: Record<string, NsaTheme> = {
       'Top rated laser teeth whitening providers nearby',
     ],
   },
+  'dental-implants': {
+    label: 'dental implants',
+    prompts: [
+      'Find dental implant specialists in Kirwan QLD',
+      'Best clinics for all-on-4 dental implants in Kirwan QLD',
+      'Locate affordable dental implant services in Kirwan QLD',
+    ],
+  },
 }

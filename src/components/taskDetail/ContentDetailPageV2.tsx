@@ -480,7 +480,7 @@ export default function ContentDetailPageV2() {
 
   return (
     <div className="flex-1 overflow-y-auto bg-white flex flex-col">
-      <div className="px-6 py-5 flex flex-col gap-6">
+      <div className="px-6 pt-5 pb-0 flex flex-col gap-6">
 
         {/* ═══ ROW 1 — v2: WhyThisMattersCard replaces ScoreCard + Why it matters ═══ */}
         <WhyThisMattersCard rec={rec} metrics={metrics} />
@@ -734,11 +734,7 @@ export default function ContentDetailPageV2() {
         {/* ═══ CARD 5: Competitor citations (v2 — horizontal grid, no table) ═ */}
         {rec.competitors.length > 0 && <CompetitorCitationsCardV2 rec={rec} />}
 
-        {/* ═══ CARD 6: Top competitor blogs cited by AI ════════════════ */}
-        <TopCompetitorBlogsCard rec={rec} />
 
-        {/* bottom padding */}
-        <div className="h-4 flex-shrink-0" />
       </div>
 
       {/* ── Evidence tab — REMOVED ───────────────────────────────────────── */}
@@ -904,10 +900,15 @@ export default function ContentDetailPageV2() {
 
       {/* TopMentionsCard — A/B test for dental implants rec only */}
       {rec.id === '43d87f49-4a5b-45c8-b656-d70276b5b068' && (
-        <div className="px-6 pb-5">
+        <div className="px-6 pt-6 pb-0">
           <TopMentionsCard />
         </div>
       )}
+
+      {/* ═══ Last card: Top competitor blogs cited by AI ════════════════ */}
+      <div className="px-6 pt-6 pb-6">
+        <TopCompetitorBlogsCard rec={rec} />
+      </div>
 
       {/* Location hover popover — portal */}
       {showLocHover && locationCount > 1 && createPortal(

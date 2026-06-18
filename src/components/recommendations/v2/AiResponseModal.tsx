@@ -1,25 +1,5 @@
-import { createPortal } from 'react-dom'
 import type { AiResponseEntry } from '../../../data/aiResponses'
-
-// ── Favicon helper ────────────────────────────────────────────────────────────
-function faviconUrl(siteUrl: string): string {
-  try {
-    const u = new URL(siteUrl)
-    return `https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${u.protocol}//${u.hostname}&size=64`
-  } catch {
-    return ''
-  }
-}
-
-function domainLabel(siteUrl: string): string {
-  try {
-    const hostname = new URL(siteUrl).hostname.replace(/^www\./, '')
-    const base = hostname.split('.')[0]
-    return base.charAt(0).toUpperCase() + base.slice(1)
-  } catch {
-    return siteUrl
-  }
-}
+import ResponsePopup from '../../common/ResponsePopup'
 
 // ── Chevron icon ──────────────────────────────────────────────────────────────
 function ChevronDown() {
@@ -166,7 +146,7 @@ function renderResponse(text: string, llm: string) {
           <p style={{ fontFamily: 'Inter, Roboto, sans-serif' }} className="text-[16px] text-[#212121] leading-[27px] font-semibold">
             <span className="underline decoration-dotted">{num}. {renderInline(content)}</span>
           </p>
-          {continuation && <p style={{ fontFamily: 'Inter, Roboto, sans-serif' }} className="text-[16px] text-[#555] leading-[27px] mt-1 font-normal">{renderInline(continuation)}</p>}
+          {continuation && <p style={{ fontFamily: 'Inter, Roboto, sans-serif' }} className="text-[16px] text-[#212121] leading-[27px] mt-1 font-normal">{renderInline(continuation)}</p>}
         </div>
       )
       if (continuation) i++
@@ -176,8 +156,8 @@ function renderResponse(text: string, llm: string) {
     if (line.startsWith('•')) {
       elements.push(
         <div key={key++} className="flex items-start gap-2 mb-1.5">
-          <span className="text-[#555] text-[16px] leading-[27px] flex-shrink-0 mt-[1px]">•</span>
-          <p style={{ fontFamily: 'Inter, Roboto, sans-serif' }} className="text-[16px] text-[#555] leading-[27px] font-normal">{renderInline(line.slice(1).trim())}</p>
+          <span className="text-[#212121] text-[16px] leading-[27px] flex-shrink-0 mt-[1px]">•</span>
+          <p style={{ fontFamily: 'Inter, Roboto, sans-serif' }} className="text-[16px] text-[#212121] leading-[27px] font-normal">{renderInline(line.slice(1).trim())}</p>
         </div>
       )
       continue
@@ -205,218 +185,22 @@ interface Props {
   onClose: () => void
   entry: AiResponseEntry | null
   themeTitle?: string
+  onAccept?: () => void
 }
 
-export default function AiResponseModal({ open, onClose, entry, themeTitle }: Props) {
+export default function AiResponseModal({ open, onClose, entry, themeTitle, onAccept }: Props) {
   if (!open || !entry) return null
 
   const isChatGpt = entry.llm === 'ChatGPT'
 
-  return createPortal(
-    <div className="fixed inset-0 z-[9999] overflow-y-auto">
-      {/* Overlay */}
-      <div className="fixed inset-0 bg-[rgba(33,33,33,0.64)]" onClick={onClose} />
-
-      {/* Modal */}
+  const responseNode = entry.htmlResponse ? (
+    <>
       <div
-        className="relative bg-white mx-auto flex flex-col"
-        style={{
-          borderRadius: 4,
-          marginTop: 65,
-          marginBottom: 40,
-          width: '92%',
-          maxWidth: 1200,
-          boxShadow: '0px 4px 8px 0px rgba(33,33,33,0.18)',
-        }}
-        onClick={e => e.stopPropagation()}
-      >
-        {/* ── Sticky Header ──────────────────────────────────────────── */}
-        <div className="sticky top-0 bg-white z-10 flex items-center justify-between px-6 py-4 border-b border-[#eaeaea]">
-          <div className="flex flex-col gap-[4px]">
-            <p className="text-[16px] text-[#1f2328] leading-[24px] font-normal m-0">
-              {themeTitle ?? entry.prompt}
-            </p>
-            <div className="flex items-center gap-[4px]">
-              {entry.date && (
-                <span className="flex items-center text-[12px] text-[#555] leading-[18px] tracking-[-0.24px]">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mr-[2px]">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-                  </svg>
-                  {entry.date}
-                </span>
-              )}
-              {entry.location && (
-                <span className="flex items-center text-[12px] text-[#555] leading-[18px] tracking-[-0.24px]">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mr-[2px]">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-                  </svg>
-                  {entry.location}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#f5f5f5] transition-colors"
-            aria-label="Close"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-
-        {/* ── Content Card ───────────────────────────────────────────── */}
-        <div className="mx-5 mb-5 mt-0 border border-[#eaeaea] rounded-[8px] p-[16px] overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
-          <div className="pt-[38px] pl-[50px] pr-[37px] pb-[24px] flex flex-col gap-[36px]">
-
-            {/* LLM label + prompt bubble + response */}
-            <div className="flex flex-col gap-[66px] items-end">
-              <div className="w-full flex flex-col gap-[34px]">
-
-                {/* LLM name as bold heading at top of card */}
-                <p
-                  className="text-[16px] text-[#212121] leading-[27px] font-semibold"
-                  style={{ fontFamily: 'Inter, Roboto, sans-serif' }}
-                >
-                  {entry.llm}
-                </p>
-
-                {/* Prompt bubble — right-aligned, gray */}
-                <div className="flex justify-end">
-                  <div
-                    className="text-[16px] text-[#212121] leading-[27px] font-normal px-4 py-3"
-                    style={{
-                      fontFamily: 'Inter, Roboto, sans-serif',
-                      background: '#f4f4f4',
-                      borderRadius: 24,
-                      maxWidth: 558,
-                    }}
-                  >
-                    {entry.prompt}
-                  </div>
-                </div>
-
-                {/* Response content */}
-                <div>
-                  {entry.htmlResponse ? (
-                    <div
-                      className="rec-exec-response-html"
-                      // eslint-disable-next-line react/no-danger
-                      dangerouslySetInnerHTML={{ __html: entry.htmlResponse }}
-                    />
-                  ) : isChatGpt && entry.chatGptBullets?.length ? (
-                    <ChatGptResponse entry={entry} />
-                  ) : (
-                    renderResponse(entry.response, entry.llm)
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* ── Citations + competitor stats ────────────────────────── */}
-            {(entry.citations.length > 0 || entry.competitorStats?.length) && (
-              <div className="flex flex-col gap-[24px] px-[16px]">
-
-                {/* Citation sources */}
-                {entry.citations.length > 0 && (
-                  <div className="flex flex-col px-[8px]">
-                    <div className="flex flex-col gap-[14px]">
-                      <div className="flex items-center pt-[6px] px-[4px]">
-                        <p className="text-[14px] text-[#212121] leading-[20px] font-normal tracking-[-0.28px]">
-                          Citation sources
-                        </p>
-                      </div>
-                      <div className="flex flex-col gap-[14px]">
-                        {entry.citations.map((cite, i) => {
-                          const favicon = faviconUrl(cite.url)
-                          const domain = domainLabel(cite.url)
-                          const isLast = i === entry.citations.length - 1
-                          return (
-                            <div
-                              key={i}
-                              className={`flex flex-col gap-[4px] pb-[12px]${isLast ? '' : ' border-b border-[#eaeaea]'}`}
-                            >
-                              {/* site icon + name */}
-                              <div className="flex gap-[4px] items-center">
-                                {favicon && (
-                                  <div className="w-5 h-5 rounded flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#f0f0f0]">
-                                    <img src={favicon} alt="site icon" loading="lazy" width={20} height={20} style={{ objectFit: 'contain', display: 'block' }} />
-                                  </div>
-                                )}
-                                <span className="text-[12px] text-[#212121] leading-[18px] font-normal">{cite.name || domain}</span>
-                              </div>
-                              {/* title link */}
-                              <a
-                                href={cite.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-[12px] text-[#1976d2] leading-[18px] font-normal tracking-[-0.24px]"
-                                style={{ width: 465 }}
-                              >
-                                {cite.title}
-                              </a>
-                              {/* description */}
-                              {cite.description && (
-                                <p
-                                  className="text-[12px] text-[#555] leading-[18px] font-normal tracking-[-0.24px] overflow-hidden"
-                                  style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
-                                >
-                                  {cite.description}
-                                </p>
-                              )}
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Competitor citation stats */}
-                {entry.competitorStats && entry.competitorStats.length > 0 && (
-                  <div className="flex flex-col gap-[24px]">
-                    {entry.competitorStats.map((comp, i) => (
-                      <div key={i} className="flex items-start justify-between">
-                        <div className="flex flex-col items-start" style={{ width: 183 }}>
-                          <div className="flex items-center py-[4px]">
-                            <p className="text-[14px] text-[#212121] leading-[20px] font-normal tracking-[-0.28px] whitespace-nowrap">
-                              {comp.name}
-                            </p>
-                          </div>
-                          <div className="flex gap-[4px] items-center">
-                            <p className="text-[12px] text-[#555] leading-[18px] font-normal tracking-[-0.24px] whitespace-nowrap">
-                              {comp.citations} citations
-                            </p>
-                            <ChevronDown />
-                          </div>
-                        </div>
-                        <div className="flex items-center py-[4px]">
-                          <p className="text-[0px] leading-none">
-                            <span className="text-[14px] text-[#212121] leading-[20px] font-normal tracking-[-0.28px]">{comp.percentage}</span>
-                            <span className="text-[12px] text-[#555] leading-[18px] tracking-[-0.24px]">%</span>
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Top cited sources label */}
-                <p className="text-[14px] text-[#212121] leading-[20px] font-normal tracking-[-0.28px]">
-                  Top cited sources
-                </p>
-              </div>
-            )}
-
-          </div>
-        </div>
-      </div>
-
+        className="rec-exec-response-html"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: entry.htmlResponse }}
+      />
       <style>{`
-        .rec-exec-status-closed { color: #d32f2f; }
         .rec-exec-response-html p { margin-bottom: 12px; font-size: 16px; line-height: 27px; color: #212121; font-family: Inter, Roboto, sans-serif; }
         .rec-exec-response-html p:last-child { margin-bottom: 0; }
         .rec-exec-response-html a { color: #1976d2; text-decoration: underline; }
@@ -424,7 +208,58 @@ export default function AiResponseModal({ open, onClose, entry, themeTitle }: Pr
         .rec-exec-response-html strong { font-weight: 600; }
         .rec-exec-response-html em { font-style: italic; color: #555; }
       `}</style>
-    </div>,
-    document.body
+    </>
+  ) : isChatGpt && entry.chatGptBullets?.length ? (
+    <ChatGptResponse entry={entry} />
+  ) : (
+    renderResponse(entry.response, entry.llm)
+  )
+
+  const competitorStatsNode = entry.competitorStats && entry.competitorStats.length > 0 ? (
+    <div className="flex flex-col gap-[24px] px-[16px] mt-6">
+      <div className="flex flex-col gap-[24px]">
+        {entry.competitorStats.map((comp, i) => (
+          <div key={i} className="flex items-start justify-between">
+            <div className="flex flex-col items-start" style={{ width: 183 }}>
+              <p className="text-[14px] text-[#212121] leading-[20px] font-normal tracking-[-0.28px] whitespace-nowrap py-[4px]">
+                {comp.name}
+              </p>
+              <div className="flex gap-[4px] items-center">
+                <p className="text-[12px] text-[#555] leading-[18px] font-normal tracking-[-0.24px] whitespace-nowrap">
+                  {comp.citations} citations
+                </p>
+                <ChevronDown />
+              </div>
+            </div>
+            <div className="flex items-center py-[4px]">
+              <p className="text-[0px] leading-none">
+                <span className="text-[14px] text-[#212121] leading-[20px] font-normal tracking-[-0.28px]">{comp.percentage}</span>
+                <span className="text-[12px] text-[#555] leading-[18px] tracking-[-0.24px]">%</span>
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="text-[14px] text-[#212121] leading-[20px] font-normal tracking-[-0.28px]">
+        Top cited sources
+      </p>
+    </div>
+  ) : null
+
+  return (
+    <ResponsePopup
+      open={open}
+      onClose={onClose}
+      title={themeTitle ?? entry.prompt}
+      date={entry.date}
+      location={entry.location}
+      llmName={entry.llm}
+      prompt={entry.prompt}
+      citations={entry.citations}
+      onAccept={onAccept}
+    >
+      {responseNode}
+      {competitorStatsNode}
+    </ResponsePopup>
   )
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { createPortal } from 'react-dom'
+import AiResponseModal from './AiResponseModal'
+import type { AiResponseEntry } from '../../../data/aiResponses'
 import {
-  DENTAL_IMPLANT_THEME,
   DENTAL_IMPLANT_PROMPTS,
   MY_BUSINESS,
   getResponseForPromptAndLlm,
@@ -28,106 +28,25 @@ function getAvatarColor(name: string) {
   return AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length]
 }
 
-// ── Response modal ────────────────────────────────────────────────────────────
-const LLM_BUBBLE_BG: Record<LLM, string> = {
-  ChatGPT: '#d1fae5',
-  Gemini: '#e8f0fe',
-  Perplexity: '#f3e8ff',
-}
-
-function renderResponseText(text: string) {
-  const lines = text.split('\n')
-  return (
-    <div>
-      {lines.map((line, i) => {
-        const trimmed = line.trim()
-        if (!trimmed) return <div key={i} className="h-3" />
-        if (/^\d+\.\s/.test(trimmed)) {
-          return (
-            <p key={i} className="text-[14px] text-[#212121] leading-[22px] font-medium mb-1">
-              {trimmed}
-            </p>
-          )
-        }
-        if (trimmed.startsWith('Rank ')) {
-          return (
-            <p key={i} className="text-[14px] text-[#212121] leading-[22px] font-semibold mt-3 mb-1">
-              {trimmed}
-            </p>
-          )
-        }
-        return (
-          <p key={i} className="text-[14px] text-[#212121] leading-[22px] font-normal mb-1">
-            {trimmed}
-          </p>
-        )
-      })}
-    </div>
-  )
-}
-
-interface ModalProps {
-  entry: DentalImplantResponse
-  onClose: () => void
-}
-
-function ResponseModal({ entry, onClose }: ModalProps) {
-  const bubbleBg = LLM_BUBBLE_BG[entry.llm as LLM] ?? '#f4f4f4'
-  return createPortal(
-    <div className="fixed inset-0 z-[9999] overflow-y-auto">
-      <div className="fixed inset-0 bg-[rgba(33,33,33,0.64)]" onClick={onClose} />
-      <div
-        className="relative bg-white mx-auto"
-        style={{ borderRadius: 8, padding: 30, marginTop: 65, marginBottom: 40, width: '92%', maxWidth: 860, boxShadow: 'rgba(0,0,0,0.15) 0px 2px 4px 0px' }}
-        onClick={e => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded hover:bg-[#f5f5f5]"
-          aria-label="Close"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
-
-        <div className="flex flex-col gap-4">
-          <div>
-            <h3 className="text-[18px] text-[#212121] leading-[26px] font-medium m-0">
-              {entry.prompt}
-            </h3>
-            <span className="inline-block mt-1 text-[12px] text-[#555] bg-[#f0f0f0] rounded px-2 py-0.5">
-              {entry.llm}
-            </span>
-          </div>
-
-          {/* prompt bubble */}
-          <div
-            className="text-[14px] text-[#1a1a1a] leading-[22px] px-4 py-3 w-fit"
-            style={{ background: bubbleBg, borderRadius: '18px 18px 18px 4px', maxWidth: '70%' }}
-          >
-            {entry.prompt}
-          </div>
-
-          {/* response */}
-          <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 320px)' }}>
-            {renderResponseText(entry.response)}
-          </div>
-        </div>
-      </div>
-    </div>,
-    document.body,
-  )
+function toAiEntry(r: DentalImplantResponse): AiResponseEntry {
+  return {
+    date: 'Jan 10, 2026',
+    location: 'Kirwan, QLD',
+    llm: r.llm,
+    prompt: r.prompt,
+    response: r.response,
+    citations: [],
+  }
 }
 
 // ── Main card ─────────────────────────────────────────────────────────────────
 export default function TopMentionsCard() {
   const [selectedLlm, setSelectedLlm] = useState<LLM>('ChatGPT')
-  const [modalEntry, setModalEntry] = useState<DentalImplantResponse | null>(null)
+  const [modalEntry, setModalEntry] = useState<AiResponseEntry | null>(null)
 
   const openModal = (prompt: string) => {
     const entry = getResponseForPromptAndLlm(prompt, selectedLlm)
-    if (entry) setModalEntry(entry)
+    if (entry) setModalEntry(toAiEntry(entry))
   }
 
   return (
@@ -140,7 +59,7 @@ export default function TopMentionsCard() {
             How you rank against competitors
           </p>
           <p className="text-[12px] text-[#555] leading-[18px] mt-[2px]">
-            Understand how your brand compares to competitors by theme and ranking position across AI platforms
+            See where you appear in AI-generated answers across AI sites
           </p>
         </div>
 
@@ -206,7 +125,7 @@ export default function TopMentionsCard() {
                             You
                           </span>
                         ) : (
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-start gap-1.5">
                             {COMPETITOR_LOGOS[business] ? (
                               <img
                                 src={COMPETITOR_LOGOS[business]}
@@ -238,9 +157,12 @@ export default function TopMentionsCard() {
         </div>
       </div>
 
-      {modalEntry && (
-        <ResponseModal entry={modalEntry} onClose={() => setModalEntry(null)} />
-      )}
+      <AiResponseModal
+        open={modalEntry !== null}
+        onClose={() => setModalEntry(null)}
+        entry={modalEntry}
+        themeTitle={modalEntry?.prompt}
+      />
     </>
   )
 }

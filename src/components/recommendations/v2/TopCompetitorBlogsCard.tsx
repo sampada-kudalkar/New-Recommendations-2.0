@@ -62,7 +62,7 @@ export default function TopCompetitorBlogsCard({ rec }: Props) {
 
       {/* Header */}
       <div className="px-[20px] py-[16px]">
-        <p className="text-[16px] text-[#555] leading-[24px] tracking-[-0.32px] font-normal">
+        <p className="text-[16px] text-[#212121] leading-[24px] tracking-[-0.32px] font-normal">
           Which top competitor blogs are cited by AI for prompts related to '{themeLabel}'
         </p>
         <p className="text-[12px] text-[#555] leading-[18px] mt-[2px] overflow-hidden text-ellipsis whitespace-nowrap">
