@@ -64,7 +64,7 @@ export default function TopMentionsCard({
       <div className="bg-white border border-[#eaeaea] rounded-[8px] overflow-hidden">
 
         {/* ── Card header ──────────────────────────────────────────────────── */}
-        <div className="px-5 pt-4 pb-3">
+        <div className="px-6 pt-4 pb-3">
           <p className="text-[16px] text-[#212121] leading-[24px] tracking-[-0.32px] font-normal">
             How you rank against competitors
           </p>
@@ -74,7 +74,7 @@ export default function TopMentionsCard({
         </div>
 
         {/* ── LLM Tabs ─────────────────────────────────────────────────────── */}
-        <div className="flex items-center gap-4 px-2">
+        <div className="flex items-center gap-4 px-6">
           {LLMS.map(llm => (
             <button
               key={llm}
@@ -91,7 +91,7 @@ export default function TopMentionsCard({
         </div>
 
         {/* ── Table ────────────────────────────────────────────────────────── */}
-        <div className="overflow-x-auto px-2 pb-6">
+        <div className="overflow-x-auto px-6 pb-6">
           {/* Column headers */}
           <div className="flex items-center h-[52px] border-b border-[#eaeaea] min-w-[700px]">
             <div className="w-[280px] flex-shrink-0 pr-4 text-[11px] text-[#555] font-normal">
