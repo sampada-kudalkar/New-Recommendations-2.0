@@ -3,8 +3,8 @@ import AiResponseModal from './AiResponseModal'
 import type { AiResponseEntry } from '../../../data/aiResponses'
 import {
   DENTAL_IMPLANT_PROMPTS,
-  MY_BUSINESS,
-  getResponseForPromptAndLlm,
+  MY_BUSINESS as DENTAL_MY_BUSINESS,
+  getResponseForPromptAndLlm as getDentalResponse,
   type DentalImplantResponse,
 } from '../../../data/dentalImplantResponses'
 import novaDentalLogo from '../../../assets/logos/nova-dental.png'
@@ -40,12 +40,22 @@ function toAiEntry(r: DentalImplantResponse): AiResponseEntry {
 }
 
 // ── Main card ─────────────────────────────────────────────────────────────────
-export default function TopMentionsCard() {
+interface TopMentionsCardProps {
+  prompts?: string[]
+  getResponse?: (prompt: string, llm: string) => DentalImplantResponse | undefined
+  myBusiness?: string
+}
+
+export default function TopMentionsCard({
+  prompts = DENTAL_IMPLANT_PROMPTS,
+  getResponse = getDentalResponse,
+  myBusiness = DENTAL_MY_BUSINESS,
+}: TopMentionsCardProps = {}) {
   const [selectedLlm, setSelectedLlm] = useState<LLM>('ChatGPT')
   const [modalEntry, setModalEntry] = useState<AiResponseEntry | null>(null)
 
   const openModal = (prompt: string) => {
-    const entry = getResponseForPromptAndLlm(prompt, selectedLlm)
+    const entry = getResponse(prompt, selectedLlm)
     if (entry) setModalEntry(toAiEntry(entry))
   }
 
@@ -81,7 +91,7 @@ export default function TopMentionsCard() {
         </div>
 
         {/* ── Table ────────────────────────────────────────────────────────── */}
-        <div className="overflow-x-auto px-5 pb-6">
+        <div className="overflow-x-auto px-2 pb-6">
           {/* Column headers */}
           <div className="flex items-center h-[52px] border-b border-[#eaeaea] min-w-[700px]">
             <div className="w-[280px] flex-shrink-0 pr-4 text-[11px] text-[#555] font-normal">
@@ -95,10 +105,10 @@ export default function TopMentionsCard() {
           </div>
 
           {/* Prompt rows */}
-          {DENTAL_IMPLANT_PROMPTS.map((prompt, idx) => {
-            const entry = getResponseForPromptAndLlm(prompt, selectedLlm)
+          {prompts.map((prompt, idx) => {
+            const entry = getResponse(prompt, selectedLlm)
             const rankings = entry?.rankings ?? []
-            const isLast = idx === DENTAL_IMPLANT_PROMPTS.length - 1
+            const isLast = idx === prompts.length - 1
 
             return (
               <button
@@ -116,7 +126,7 @@ export default function TopMentionsCard() {
                 {/* Rank cells */}
                 {RANKS.map(rank => {
                   const business = rankings[rank - 1] ?? null
-                  const isYou = business === MY_BUSINESS
+                  const isYou = business === myBusiness
                   return (
                     <div key={rank} className="flex-1 min-w-0 px-3">
                       {business ? (
