@@ -354,6 +354,78 @@ export const seedRecommendations: Recommendation[] = [
     ]),
   },
 
+  {
+    id: 'c3d4e5f6-b2c3-1234-cdef-teeth-whitening2',
+    title: 'Update Teeth Whitening Content for My Family Dental Townsville, Kirwan',
+    description:
+      'Potential patients asking AI assistants about teeth whitening near Kirwan are not seeing My Family Dental Townsville in the answers. This can result in missed enquiries, fewer booked appointments, and competitors capturing local demand that should reach the practice.',
+    category: 'Content',
+    impactLabel: 'Medium impact',
+    effort: 'Medium',
+    themeId: 'teeth-whitening',
+    createdAt: CREATED_AT,
+    locationNames: ['Kirwan QLD'],
+    locations: 1,
+    status: 'pending',
+    assignedTo: null,
+    assignChoice: null,
+    acceptedAt: null,
+    acceptedBy: null,
+    completedAt: null,
+    youScore: 7.41,
+    compScore: 11.1,
+    expectedImpact:
+      'After fixing the existing page, My Family Dental Townsville will be more likely to appear in AI-assistant answers about teeth whitening for the Kirwan area.',
+    targetPages: [
+      'https://myfamilydentalqld.com.au/teeth-whitening-service',
+    ],
+    whyItWorks: [
+      'Potential patients asking AI assistants about teeth whitening near Kirwan are not seeing My Family Dental Townsville in the answers. This can result in missed enquiries, fewer booked appointments, and competitors capturing local demand that should reach the practice.',
+    ],
+    competitors: makeCompetitors([
+      {
+        name: 'National Dental Care Townsville',
+        pageUrl: 'https://www.nationaldentalcare.com.au/townsville/teeth-whitening',
+        llmSnippet: 'Comprehensive dental services in Townsville including professional teeth whitening. Book online with our experienced Townsville dental team...',
+        gap: 'High citation share across ChatGPT and Gemini for teeth whitening queries.',
+        totalCitations: 6, citationRank: 1,
+      },
+      {
+        name: 'Absolutely Dental @ Kirwan Plaza',
+        pageUrl: 'https://www.absolutelydental.com.au/',
+        llmSnippet: 'Cosmetic and general dentistry in Kirwan, Townsville. Specialising in professional teeth whitening and complete smile makeover treatments...',
+        gap: 'Strong presence on Perplexity and Claude for local whitening searches.',
+        totalCitations: 5, citationRank: 2,
+      },
+      {
+        name: 'Dental Balance NQ',
+        pageUrl: 'https://dentalbalance.com.au/',
+        llmSnippet: 'Family and cosmetic dentistry in North Queensland offering in-chair and take-home teeth whitening solutions for a brighter smile...',
+        gap: 'Frequently cited alongside National Dental Care for whitening queries.',
+        totalCitations: 4, citationRank: 3,
+      },
+    ]),
+    sources: [],
+    contentGaps: [],
+    promptsTriggeringThis: [],
+    llmCoverageGap: { platforms: [], summary: '' },
+    generatedAsset: null,
+    checklist: makeChecklist('c3d4e5f6-b2c3-1234-cdef-teeth-whitening2', [
+      {
+        label: 'Review and update the teeth whitening service page',
+        description: 'Ensure https://myfamilydentalqld.com.au/teeth-whitening-service includes specific service details for teeth whitening and a direct call to action.',
+        stepType: 'task',
+        targetPage: 'https://myfamilydentalqld.com.au/teeth-whitening-service',
+      },
+      {
+        label: 'Submit the page for reindexing in Google Search Console',
+        description: 'Once changes are published, submit https://myfamilydentalqld.com.au/teeth-whitening-service for reindexing so search engines discover the updated content.',
+        stepType: 'task',
+        targetPage: 'https://myfamilydentalqld.com.au/teeth-whitening-service',
+      },
+    ]),
+  },
+
   // 6 — 43d87f49-4a5b-45c8-b656-d70276b5b068
   {
     id: '43d87f49-4a5b-45c8-b656-d70276b5b068',

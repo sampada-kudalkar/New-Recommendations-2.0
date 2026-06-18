@@ -8,6 +8,11 @@ import WhyThisMattersCard from '../recommendations/v2/WhyThisMattersCard'
 import CompetitorCitationsCardV2 from '../recommendations/v2/CompetitorCitationsCardV2'
 import TopCompetitorBlogsCard from '../recommendations/v2/TopCompetitorBlogsCard'
 import TopMentionsCard from '../recommendations/v2/TopMentionsCard'
+import {
+  TEETH_WHITENING_PROMPTS,
+  TEETH_WHITENING_MY_BUSINESS,
+  getTeethWhiteningResponse,
+} from '../../data/teethWhiteningResponses'
 
 
 const BASE = import.meta.env.BASE_URL
@@ -732,7 +737,7 @@ export default function ContentDetailPageV2() {
         </div>
 
         {/* ═══ CARD 5: Competitor citations (v2 — horizontal grid, no table) ═ */}
-        {rec.competitors.length > 0 && <CompetitorCitationsCardV2 rec={rec} />}
+        {rec.competitors.length > 0 && rec.id !== 'c3d4e5f6-b2c3-1234-cdef-teeth-whitening2' && <CompetitorCitationsCardV2 rec={rec} />}
 
 
       </div>
@@ -898,10 +903,21 @@ export default function ContentDetailPageV2() {
       </div>
       )}
 
-      {/* TopMentionsCard — A/B test for dental implants rec only */}
+      {/* TopMentionsCard — dental implants rec */}
       {rec.id === '43d87f49-4a5b-45c8-b656-d70276b5b068' && (
         <div className="px-6 pt-6 pb-0">
           <TopMentionsCard />
+        </div>
+      )}
+
+      {/* TopMentionsCard — duplicate teeth whitening rec */}
+      {rec.id === 'c3d4e5f6-b2c3-1234-cdef-teeth-whitening2' && (
+        <div className="px-6 pt-6 pb-0">
+          <TopMentionsCard
+            prompts={TEETH_WHITENING_PROMPTS}
+            getResponse={getTeethWhiteningResponse}
+            myBusiness={TEETH_WHITENING_MY_BUSINESS}
+          />
         </div>
       )}
 
