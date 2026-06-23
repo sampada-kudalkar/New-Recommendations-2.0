@@ -39,7 +39,6 @@ export default function WhyThisMattersCard({ rec, metrics }: Props) {
 
   let competitors: { name: string; score: number }[]
   if (rec.competitors.length === 0 && primaryCompScore !== null) {
-    // compScore is set but no named competitors — mirror the table's single value
     competitors = [{ name: 'Competitor average', score: primaryCompScore }]
   } else {
     competitors = rec.competitors.slice(0, 3).map((c, i) => ({
@@ -49,6 +48,12 @@ export default function WhyThisMattersCard({ rec, metrics }: Props) {
         : Math.round(Math.min((c.totalCitations / maxCitations) * (rawYou * 1.1), 100)),
     }))
   }
+
+  const minCompScore = youPct + 2.0
+  const clampedCompetitors = competitors.map(c => ({
+    ...c,
+    score: Math.max(c.score, minCompScore),
+  }))
 
   return (
     <div
@@ -80,7 +85,7 @@ export default function WhyThisMattersCard({ rec, metrics }: Props) {
         </div>
 
         {/* Competitor groups */}
-        {competitors.length === 0 ? (
+        {clampedCompetitors.length === 0 ? (
           <div className="flex items-center gap-[40px]">
             <div
               className="flex items-center justify-center rounded-full"
@@ -89,15 +94,15 @@ export default function WhyThisMattersCard({ rec, metrics }: Props) {
               <span className="text-[16px] text-[#212121] leading-[28px] font-normal">vs</span>
             </div>
             <div className="flex flex-col items-start gap-[2px]">
-              <p className="text-[32px] text-[#888] leading-[48px] tracking-[-0.64px] font-normal">
-                NA
+              <p className="text-[32px] text-[#212121] leading-[48px] tracking-[-0.64px] font-normal">
+                {minCompScore.toFixed(1)}%
               </p>
-              <p className="text-[12px] text-[#888] leading-[18px] font-normal">
+              <p className="text-[12px] text-[#555] leading-[18px] font-normal">
                 Competitor average
               </p>
             </div>
           </div>
-        ) : competitors.map((comp, i) => (
+        ) : clampedCompetitors.map((comp, i) => (
           <div key={i} className="flex items-center gap-[40px]">
             {/* vs pill */}
             <div

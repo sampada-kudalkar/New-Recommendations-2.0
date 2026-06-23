@@ -116,6 +116,8 @@ export interface Recommendation {
   competitorsInsight?: string[]
   /** AEO content score data — only populated for Content-type recs */
   aeoScore?: AeoScore
+  /** Full blog content for AI-generated blog recs */
+  blog?: RecBlogContent
   /** Your actual metric score (0-100) — overrides global BusinessMetrics for bars */
   youScore?: number
   /** Top competitor's metric score (0-100) */
@@ -134,6 +136,25 @@ export interface AeoScore {
   you: number           // total AEO score (0-100)
   competitor: number    // top competitor's AEO total
   subScores: AeoSubScore[]
+}
+
+export interface BlogSection {
+  heading?: string
+  body: string[]
+  list?: string[]
+  subSections?: { heading: string; body: string[] }[]
+}
+
+export interface RecBlogContent {
+  title: string
+  intro: string
+  sections: BlogSection[]
+  imageUrl?: string
+  meta: {
+    title: string
+    description: string
+    slug: string
+  }
 }
 
 export interface BusinessMetrics {

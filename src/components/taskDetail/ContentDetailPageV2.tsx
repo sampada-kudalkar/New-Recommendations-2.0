@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import type { Recommendation, AeoSubScore } from '../../types'
-import { nsaThemesConfig } from '../../data/nsaThemesConfig'
+import type { Recommendation, AeoSubScore, RecBlogContent } from '../../types'
+import { nsaThemesConfig, formatThemeLabel } from '../../data/nsaThemesConfig'
 import { getLocationsForRec } from '../../data/locationsData'
 import { useAppStore } from '../../store/useAppStore'
 import WhyThisMattersCard from '../recommendations/v2/WhyThisMattersCard'
@@ -67,26 +67,40 @@ interface BlogPreviewModalProps {
   aeoScore: number
   subScores?: AeoSubScore[]
   onAccept?: () => void
+  blog?: RecBlogContent
 }
 
-function BlogPreviewModal({ open, onClose, aeoScore, subScores, onAccept }: BlogPreviewModalProps) {
-  if (!open) return null
-  const fillPct = Math.min(aeoScore, 100)
+const SUB_SCORE_NAMES = ['Readability', 'Content freshness', 'Content structure', 'Answerability signals', 'Information density', 'Machine readability']
 
-  const metaRows = [
-    {
-      label: 'Meta Title',
-      value: 'Selling Property in Australia: A Comprehensive Guide | Rain & Horn Dubbo',
-    },
-    {
-      label: 'Meta Description',
-      value: "Expert guide to selling property in Australia. From pricing strategy to settlement — Rain & Horn Dubbo's 40+ years of local expertise helps you achieve the best outcome.",
-    },
-    {
-      label: 'Slug',
-      value: 'selling-property-australia-comprehensive-guide',
-    },
-  ]
+function generateFallbackSubScores(total: number): AeoSubScore[] {
+  const n = SUB_SCORE_NAMES.length
+  const scores: number[] = []
+  let remaining = total * n
+  for (let i = 0; i < n - 1; i++) {
+    const lo = Math.max(0, remaining - 100 * (n - 1 - i))
+    const hi = Math.min(100, remaining - (n - 1 - i))
+    const val = Math.round(lo + Math.random() * (hi - lo))
+    scores.push(val)
+    remaining -= val
+  }
+  scores.push(Math.round(remaining))
+  return SUB_SCORE_NAMES.map((name, i) => ({ name, weight: 10.2, you: scores[i], competitor: scores[i], delta: 0 }))
+}
+
+function BlogPreviewModal({ open, onClose, aeoScore, subScores, onAccept, blog }: BlogPreviewModalProps) {
+  if (!open) return null
+  const displaySubScores = (subScores && subScores.length > 0) ? subScores : generateFallbackSubScores(aeoScore)
+  const metaRows = blog
+    ? [
+        { label: 'Meta Title', value: blog.meta.title },
+        { label: 'Meta Description', value: blog.meta.description },
+        { label: 'Slug', value: blog.meta.slug },
+      ]
+    : [
+        { label: 'Meta Title', value: 'Selling Property in Australia: A Comprehensive Guide | Rain & Horn Dubbo' },
+        { label: 'Meta Description', value: "Expert guide to selling property in Australia. From pricing strategy to settlement — Rain & Horn Dubbo's 40+ years of local expertise helps you achieve the best outcome." },
+        { label: 'Slug', value: 'selling-property-australia-comprehensive-guide' },
+      ]
 
   function CopyIcon() {
     return (
@@ -132,44 +146,23 @@ function BlogPreviewModal({ open, onClose, aeoScore, subScores, onAccept }: Blog
             {/* Big score + label */}
             <div>
               <div className="flex items-end gap-1">
-                <span className="text-[32px] text-[#4cae3d] leading-[44px] font-normal">{aeoScore}</span>
+                <span className="text-[32px] text-[#212121] leading-[44px] font-normal">{aeoScore}</span>
                 <span className="text-[15px] font-medium text-[#8f8f8f] leading-[32px]">/ 100</span>
               </div>
               <div className="flex items-center gap-1 mt-1">
-                <span className="text-[16px] text-[#555] leading-[24px] tracking-[-0.32px] font-normal">AEO Content score</span>
+                <span className="text-[14px] text-[#555] leading-[20px] tracking-[-0.28px] font-normal">AEO Content score</span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-50 flex-shrink-0">
                   <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
                 </svg>
               </div>
-              {/* Progress bar with "You" pill */}
-              <div className="relative mt-8 mb-2">
-                {/* "You" pill above bar */}
-                <div
-                  className="absolute bottom-[14px] flex flex-col items-center"
-                  style={{ left: `calc(${fillPct}% - 24px)` }}
-                >
-                  <span className="text-white text-[12px] leading-[16px] px-2 py-0.5 rounded-full border-2 border-white font-normal whitespace-nowrap"
-                    style={{ background: 'linear-gradient(180deg, #0f7195 0%, #094459 60%)' }}>
-                    You
-                  </span>
-                  <div className="w-px h-3 bg-[#0f7195]" />
-                </div>
-                {/* Track */}
-                <div className="relative h-[6px] bg-[#e5e5e5] rounded-full w-full">
-                  <div className="absolute left-0 top-0 h-full bg-[#0f7195] rounded-full" style={{ width: `${fillPct}%` }} />
-                  {/* Dot */}
-                  <div
-                    className="absolute top-1/2 w-3 h-3 bg-[#0f7195] rounded-full border-2 border-white"
-                    style={{ left: `calc(${fillPct}% - 6px)`, transform: 'translateY(-50%)' }}
-                  />
-                </div>
-              </div>
             </div>
 
+            <p className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px] font-normal w-full">AEO score breakdown</p>
+
             {/* Sub-scores */}
-            {subScores && subScores.length > 0 && (
+            {displaySubScores.length > 0 && (
               <div className="flex flex-col gap-6">
-                {subScores.map((row, i) => (
+                {displaySubScores.map((row, i) => (
                   <div key={i} className="flex items-start justify-between">
                     <div>
                       <p className="text-[14px] text-[#212121] leading-[20px] tracking-[-0.28px]">{row.name}</p>
@@ -189,164 +182,80 @@ function BlogPreviewModal({ open, onClose, aeoScore, subScores, onAccept }: Blog
 
             {/* Blog article */}
             <div className="pl-[50px] pr-[37px] pt-[38px] pb-[24px] flex flex-col gap-8">
-              <div className="flex flex-col gap-2">
-                <p className="text-[24px] font-medium text-[#212121] leading-[36px] tracking-[-0.48px]">
-                  Dubbo Suburb Service Pages for Sales & Rentals
-                </p>
-                <div className="flex flex-col gap-[25px] text-[14px] text-[#212121] leading-[20px]">
-                  <p>Finding the right real estate support starts with choosing a team that understands your suburb.</p>
-                  <p>If you're thinking of selling, leasing, buying, or renting in Dubbo, working with a local team who understands each suburb can make all the difference. Every part of Dubbo has its own buyer demand, rental trends, property styles, and community appeal.</p>
-                  <p>At Raine & Horne Dubbo, we know that property decisions are local. That's why we proudly help homeowners, investors, landlords, tenants, and buyers across Dubbo's most sought-after suburbs with trusted real estate advice and personalised service.</p>
-                  <p>Whether you need help selling your family home, managing an investment property, or finding the right rental, our experienced team is here to guide you.</p>
-                </div>
-              </div>
-
-              {/* Hero image */}
-              <div className="w-full rounded-lg overflow-hidden">
-                <img
-                  src={`${BASE}assets/image-1.png`}
-                  alt="Dubbo Property"
-                  className="w-full h-auto object-contain"
-                />
-              </div>
-
-              {/* Section 1 */}
-              <div className="flex flex-col gap-2">
-                <p className="text-[18px] font-medium text-[#212121] leading-[26px] tracking-[-0.36px]">
-                  Why Suburb Knowledge Matters
-                </p>
-                <div className="flex flex-col gap-[25px] text-[14px] text-[#212121] leading-[20px]">
-                  <p>The Dubbo market is not one-size-fits-all. A strategy that works in one suburb may not be the best fit for another.</p>
-                  <p>For example:</p>
-                  <ul className="list-disc pl-5 flex flex-col gap-2">
-                    <li>Family homes in South Dubbo may attract owner-occupiers looking for schools and parks</li>
-                    <li>Investment properties near the CBD may appeal to professionals seeking convenience</li>
-                    <li>Larger homes in newer estates may suit growing families</li>
-                    <li>Rental demand can vary significantly by location and property type</li>
-                  </ul>
-                  <p>That's why local suburb expertise matters when pricing, marketing, leasing, or negotiating.</p>
-                </div>
-              </div>
-
-              {/* Section 2 */}
-              <div className="flex flex-col gap-2">
-                <p className="text-[18px] font-medium text-[#212121] leading-[26px] tracking-[-0.36px]">
-                  Areas We Service in Dubbo
-                </p>
-                <div className="flex flex-col gap-[25px] text-[14px] text-[#212121] leading-[20px]">
-                  <p>We assist clients across Dubbo and surrounding areas, including:</p>
-
-                  <div className="flex flex-col gap-1">
-                    <p className="font-medium">South Dubbo</p>
-                    <p>Popular with families and owner-occupiers, South Dubbo offers established homes, schools, and convenient amenities.</p>
+              {blog ? (
+                <>
+                  <div className="flex flex-col gap-2">
+                    <p className="text-[24px] font-medium text-[#212121] leading-[36px] tracking-[-0.48px]">{blog.title}</p>
+                    <div className="flex flex-col gap-[25px] text-[14px] text-[#212121] leading-[20px]">
+                      <p>{blog.intro}</p>
+                      {blog.sections[0]?.body.map((p, i) => <p key={i}>{p}</p>)}
+                    </div>
                   </div>
-
-                  <div className="flex flex-col gap-1">
-                    <p className="font-medium">Central Dubbo / CBD</p>
-                    <p>Ideal for buyers seeking lifestyle and convenience, with easy access to shopping, dining, and workplaces.</p>
+                  <div className="w-full rounded-lg overflow-hidden">
+                    <img src={blog.imageUrl ? `${BASE}${blog.imageUrl}` : `${BASE}assets/image-1.png`} alt={blog.title} className="w-full h-auto object-contain" />
                   </div>
-
-                  <div className="flex flex-col gap-1">
-                    <p className="font-medium">West Dubbo</p>
-                    <p>A mix of residential living and strong rental appeal, with growing demand from both families and investors.</p>
+                  {blog.sections.slice(1).map((section, si) => (
+                    <div key={si} className="flex flex-col gap-2">
+                      {section.heading && (
+                        <p className="text-[18px] font-medium text-[#212121] leading-[26px] tracking-[-0.36px]">{section.heading}</p>
+                      )}
+                      <div className="flex flex-col gap-[25px] text-[14px] text-[#212121] leading-[20px]">
+                        {section.body.map((p, i) => <p key={i}>{p}</p>)}
+                        {section.list && (
+                          <ul className="list-disc pl-5 flex flex-col gap-2">
+                            {section.list.map((item, i) => <li key={i}>{item}</li>)}
+                          </ul>
+                        )}
+                        {section.subSections?.map((sub, i) => (
+                          <div key={i} className="flex flex-col gap-1">
+                            <p className="font-medium">{sub.heading}</p>
+                            {sub.body.map((p, j) => <p key={j}>{p}</p>)}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <>
+                  <div className="flex flex-col gap-2">
+                    <p className="text-[24px] font-medium text-[#212121] leading-[36px] tracking-[-0.48px]">
+                      Dubbo Suburb Service Pages for Sales & Rentals
+                    </p>
+                    <div className="flex flex-col gap-[25px] text-[14px] text-[#212121] leading-[20px]">
+                      <p>Finding the right real estate support starts with choosing a team that understands your suburb.</p>
+                      <p>If you're thinking of selling, leasing, buying, or renting in Dubbo, working with a local team who understands each suburb can make all the difference. Every part of Dubbo has its own buyer demand, rental trends, property styles, and community appeal.</p>
+                      <p>At Raine & Horne Dubbo, we know that property decisions are local. That's why we proudly help homeowners, investors, landlords, tenants, and buyers across Dubbo's most sought-after suburbs with trusted real estate advice and personalised service.</p>
+                      <p>Whether you need help selling your family home, managing an investment property, or finding the right rental, our experienced team is here to guide you.</p>
+                    </div>
                   </div>
-
-                  <div className="flex flex-col gap-1">
-                    <p className="font-medium">East Dubbo</p>
-                    <p>Known for quality homes, open space, and a strong community feel.</p>
+                  <div className="w-full rounded-lg overflow-hidden">
+                    <img src={`${BASE}assets/image-1.png`} alt="Dubbo Property" className="w-full h-auto object-contain" />
                   </div>
-
-                  <div className="flex flex-col gap-1">
-                    <p className="font-medium">North Dubbo</p>
-                    <p>Affordable options with excellent access to major roads and facilities.</p>
+                  <div className="flex flex-col gap-2">
+                    <p className="text-[18px] font-medium text-[#212121] leading-[26px] tracking-[-0.36px]">Why Suburb Knowledge Matters</p>
+                    <div className="flex flex-col gap-[25px] text-[14px] text-[#212121] leading-[20px]">
+                      <p>The Dubbo market is not one-size-fits-all. A strategy that works in one suburb may not be the best fit for another.</p>
+                      <ul className="list-disc pl-5 flex flex-col gap-2">
+                        <li>Family homes in South Dubbo may attract owner-occupiers looking for schools and parks</li>
+                        <li>Investment properties near the CBD may appeal to professionals seeking convenience</li>
+                        <li>Larger homes in newer estates may suit growing families</li>
+                        <li>Rental demand can vary significantly by location and property type</li>
+                      </ul>
+                    </div>
                   </div>
-
-                  <div className="flex flex-col gap-1">
-                    <p className="font-medium">Delroy Park</p>
-                    <p>A well-regarded area with golf course surroundings, modern homes, and family appeal.</p>
+                  <div className="w-full rounded-lg overflow-hidden mt-2">
+                    <img src={`${BASE}assets/image-2.png`} alt="Areas We Service" className="w-full h-auto object-contain" />
                   </div>
-
-                  <div className="flex flex-col gap-1">
-                    <p className="font-medium">Keswick Estate & Newer Developments</p>
-                    <p>Popular with buyers seeking modern builds, larger blocks, and contemporary layouts.</p>
+                  <div className="flex flex-col gap-2">
+                    <p className="text-[18px] font-medium text-[#212121] leading-[26px] tracking-[-0.36px]">Looking to Buy, Sell or Rent in Dubbo?</p>
+                    <div className="flex flex-col gap-[25px] text-[14px] text-[#212121] leading-[20px]">
+                      <p>No matter which suburb you're focused on, our team can help you make the right move.</p>
+                      <p>Contact Raine & Horne Dubbo today for expert advice, a free appraisal, or support with your next property decision.</p>
+                    </div>
                   </div>
-                </div>
-              </div>
-
-              {/* Section image 2 */}
-              <div className="w-full rounded-lg overflow-hidden mt-2">
-                <img
-                  src={`${BASE}assets/image-2.png`}
-                  alt="Areas We Service"
-                  className="w-full h-auto object-contain"
-                />
-              </div>
-
-              {/* Section 3 */}
-              <div className="flex flex-col gap-2">
-                <p className="text-[18px] font-medium text-[#212121] leading-[26px] tracking-[-0.36px]">
-                  Property Sales in Dubbo Suburbs
-                </p>
-                <div className="flex flex-col gap-[25px] text-[14px] text-[#212121] leading-[20px]">
-                  <p>If you're selling, we provide:</p>
-                  <ul className="list-disc pl-5 flex flex-col gap-2">
-                    <li>Accurate suburb-based pricing advice</li>
-                    <li>Targeted marketing to active buyers</li>
-                    <li>Professional presentation guidance</li>
-                    <li>Skilled negotiation to maximise results</li>
-                    <li>Ongoing support from appraisal to settlement</li>
-                  </ul>
-                  <p>We understand what buyers are looking for in each part of Dubbo and tailor every campaign accordingly.</p>
-                </div>
-              </div>
-
-              {/* Section 4 */}
-              <div className="flex flex-col gap-2">
-                <p className="text-[18px] font-medium text-[#212121] leading-[26px] tracking-[-0.36px]">
-                  Rental & Property Management Services
-                </p>
-                <div className="flex flex-col gap-[25px] text-[14px] text-[#212121] leading-[20px]">
-                  <p>For landlords and investors, we offer:</p>
-                  <ul className="list-disc pl-5 flex flex-col gap-2">
-                    <li>Rental appraisals based on local demand</li>
-                    <li>Quality tenant screening</li>
-                    <li>Routine inspections and maintenance coordination</li>
-                    <li>Lease management and communication</li>
-                    <li>Strategies to maximise rental returns</li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Section 5 */}
-              <div className="flex flex-col gap-2">
-                <p className="text-[18px] font-medium text-[#212121] leading-[26px] tracking-[-0.36px]">
-                  Why Choose Raine & Horne Dubbo?
-                </p>
-                <div className="flex flex-col gap-[25px] text-[14px] text-[#212121] leading-[20px]">
-                  <p>Our strong reputation, trusted local presence, and commitment to personalised service help property owners achieve better outcomes with less stress.</p>
-                  <p>We combine recognised brand strength with real local knowledge of the Dubbo market.</p>
-                </div>
-              </div>
-
-              {/* Section image 3 */}
-              <div className="w-full rounded-lg overflow-hidden mt-2">
-                <img
-                  src={`${BASE}assets/image-3.png`}
-                  alt="Contact Raine & Horne Dubbo"
-                  className="w-full h-auto object-contain"
-                />
-              </div>
-
-              {/* Section 6 */}
-              <div className="flex flex-col gap-2">
-                <p className="text-[18px] font-medium text-[#212121] leading-[26px] tracking-[-0.36px]">
-                  Looking to Buy, Sell or Rent in Dubbo?
-                </p>
-                <div className="flex flex-col gap-[25px] text-[14px] text-[#212121] leading-[20px]">
-                  <p>No matter which suburb you're focused on, our team can help you make the right move.</p>
-                  <p>Contact Raine & Horne Dubbo today for expert advice, a free appraisal, or support with your next property decision.</p>
-                </div>
-              </div>
+                </>
+              )}
             </div>
 
             {/* Meta section */}
@@ -512,14 +421,41 @@ export default function ContentDetailPageV2() {
         </div>
 
         {/* ═══ CARD 3: What will fixing this do ════════════════════════ */}
-        <div className="bg-white border border-[#eaeaea] rounded-lg px-5 py-4">
-          <p className="text-[16px] text-[#212121] leading-[24px] font-normal mb-3">
-            What will fixing this do
-          </p>
-          <p className="text-[14px] text-[#555] leading-[20px]">
-            {rec.expectedImpact ?? rec.description}
-          </p>
-        </div>
+        {rec.category === 'Content' ? (
+          <div className="bg-white border border-[#eaeaea] rounded-lg">
+            <div className="px-5 pt-4 pb-2">
+              <p className="text-[16px] text-[#212121] leading-[24px] font-normal mb-3">
+                What will fixing this do
+              </p>
+              <p className="text-[14px] text-[#555] leading-[20px] mb-3">
+                This will improve your organic rankings and matches searcher intent, closing the content and visibility gap.
+                {' '}Competitors have higher visibility, likely due to comprehensive service content.
+                {' '}You're missing high-intent traffic for top dentist for {formatThemeLabel(rec.themeId)}.
+                {' '}A dedicated page can help you capture leads and improve search visibility.
+                {' '}We've created a page draft based on what's working for competitors. Review and publish to start capturing leads.
+              </p>
+            </div>
+            <div className="px-5 pb-5">
+              <BlogPreviewBox
+                rec={rec}
+                aeoScore={98}
+                title={rec.blog?.title}
+                body={rec.blog?.intro}
+                imageUrl={rec.blog?.imageUrl ? `${BASE}${rec.blog.imageUrl}` : undefined}
+                onOpenClick={() => setShowBlogModal(true)}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white border border-[#eaeaea] rounded-lg px-5 py-4">
+            <p className="text-[16px] text-[#212121] leading-[24px] font-normal mb-3">
+              What will fixing this do
+            </p>
+            <p className="text-[14px] text-[#555] leading-[20px]">
+              {rec.expectedImpact ?? rec.description}
+            </p>
+          </div>
+        )}
 
         {/* ═══ OLD CARD 2: Generated blog / gap card — hidden ══════════ */}
         {false && <div className="bg-white border border-[#eaeaea] rounded-lg">
@@ -585,7 +521,7 @@ export default function ContentDetailPageV2() {
 
           {/* Steps */}
           <div className="pb-2">
-            {rec.checklist.length > 0
+            {rec.checklist.length > 0 && rec.category !== 'Content'
               ? rec.checklist.map((step, idx) => {
                   const isLast = idx === rec.checklist.length - 1
                   const links = step.stepType === 'link' && step.links ? step.links : []
@@ -700,9 +636,8 @@ export default function ContentDetailPageV2() {
                     {isFirst && 'cta' in step && step.cta && (
                       <div className="mt-1">
                         <button
-                          onClick={() => rec.category !== 'FAQ' && setShowBlogModal(true)}
-                          style={{ height: 36, padding: '8px 12px', border: '1px solid #e5e9f0', borderRadius: 4, background: 'white', fontSize: 14, lineHeight: '20px', letterSpacing: '-0.28px', color: '#212121', cursor: 'pointer', fontFamily: 'Roboto, sans-serif', fontWeight: 400 }}
-                          className="hover:bg-[#f5f5f5] transition-colors whitespace-nowrap"
+                          onClick={() => setShowBlogModal(true)}
+                          className="h-9 px-3 bg-[#1976d2] hover:bg-[#1565c0] text-white text-[14px] leading-[20px] rounded font-normal transition-colors whitespace-nowrap cursor-pointer"
                         >
                           {step.cta}
                         </button>
@@ -959,6 +894,7 @@ export default function ContentDetailPageV2() {
         onClose={() => setShowBlogModal(false)}
         aeoScore={98}
         subScores={rec.aeoScore?.subScores}
+        blog={rec.blog}
         onAccept={() => {
           acceptRec(rec.id, 'self')
           setShowBlogModal(false)

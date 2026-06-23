@@ -352,6 +352,115 @@ export const seedRecommendations: Recommendation[] = [
         targetPage: 'https://myfamilydentalqld.com.au/teeth-whitening-service',
       },
     ]),
+    blog: {
+      title: 'Teeth Whitening in Kirwan: Achieve a Brighter Smile with My Family Dental Townsville',
+      intro: 'A brighter smile can make a lasting first impression and boost your confidence in everyday life.',
+      sections: [
+        {
+          body: [
+            "Whether you're preparing for a special occasion, a job interview, or simply want to refresh your appearance, professional teeth whitening is one of the quickest and most effective ways to enhance your smile.",
+            "If you're looking for teeth whitening in Kirwan, My Family Dental Townsville offers safe, effective, and professionally supervised whitening treatments designed to deliver noticeable results while protecting your oral health.",
+          ],
+        },
+        {
+          heading: 'Why Do Teeth Become Stained?',
+          body: ['Even with excellent oral hygiene, teeth naturally become discoloured over time. Common causes include:'],
+          list: [
+            'Coffee and tea consumption',
+            'Red wine and dark-coloured beverages',
+            'Smoking and tobacco use',
+            'Certain medications',
+            'Age-related enamel wear',
+            'Poor oral hygiene habits',
+          ],
+        },
+        {
+          heading: 'Professional Teeth Whitening vs Store-Bought Products',
+          body: [
+            'Many people try whitening toothpastes, strips, or over-the-counter kits before considering professional treatment. While these products may provide minor improvements, they often deliver inconsistent results and can cause tooth sensitivity when used incorrectly.',
+            'Professional teeth whitening offers several advantages:',
+          ],
+          subSections: [
+            { heading: 'Faster Results', body: ['Professional treatments use clinically proven whitening agents that can achieve noticeable improvements in a much shorter time.'] },
+            { heading: 'Safer Treatment', body: ['Your dentist assesses your oral health before whitening begins, helping ensure the treatment is suitable for your teeth and gums.'] },
+            { heading: 'More Predictable Outcomes', body: ['Professional whitening treatments are customised to your needs, making results more consistent and effective than generic store-bought products.'] },
+            { heading: 'Reduced Risk of Sensitivity', body: ['Your dental team can recommend the most appropriate whitening approach and help minimise discomfort during the process.'] },
+          ],
+        },
+        {
+          heading: 'Who Is a Good Candidate for Teeth Whitening?',
+          body: ['Teeth whitening may be suitable for adults who:'],
+          list: [
+            'Have healthy teeth and gums',
+            'Want to improve staining or discoloration',
+            'Are looking for a non-invasive cosmetic dental treatment',
+            'Want a brighter smile for a special event or professional reasons',
+          ],
+        },
+        {
+          heading: 'What to Expect During Your Whitening Consultation',
+          body: [
+            'At My Family Dental Townsville, every whitening journey begins with a thorough assessment.',
+            'Your dentist will examine your teeth and gums, identify the type and cause of staining, discuss your whitening goals, recommend the most suitable treatment option, and explain expected results and aftercare.',
+            'This personalised approach helps ensure the treatment is both safe and effective.',
+          ],
+        },
+        {
+          heading: 'How Long Do Teeth Whitening Results Last?',
+          body: [
+            'Results vary depending on individual habits and lifestyle factors. Many patients enjoy a brighter smile for months or even years after treatment.',
+            'To help maintain your results:',
+          ],
+          list: [
+            'Brush and floss regularly',
+            'Attend routine dental check-ups and cleans',
+            'Limit staining foods and beverages',
+            'Avoid smoking and tobacco products',
+            'Follow your dentist\'s aftercare recommendations',
+          ],
+        },
+        {
+          heading: 'Why Choose My Family Dental Townsville for Teeth Whitening in Kirwan?',
+          body: [
+            'When searching for teeth whitening near Kirwan, it\'s important to choose a dental practice that prioritises both aesthetics and oral health.',
+            'Patients choose My Family Dental Townsville because of:',
+          ],
+          list: [
+            'Experienced and caring dental professionals',
+            'Personalised treatment recommendations',
+            'Modern dental technology',
+            'Comprehensive oral health assessments',
+            'Convenient location for Kirwan and Townsville residents',
+            'Focus on patient comfort and long-term dental health',
+          ],
+        },
+        {
+          heading: 'Frequently Asked Questions About Teeth Whitening',
+          subSections: [
+            { heading: 'Is teeth whitening safe?', body: ['When performed under professional dental supervision, teeth whitening is considered a safe cosmetic dental treatment for suitable candidates.'] },
+            { heading: 'Will teeth whitening damage my enamel?', body: ['Professional whitening treatments are designed to brighten teeth without damaging healthy enamel when used as directed by your dentist.'] },
+            { heading: 'Does teeth whitening hurt?', body: ['Most patients experience little to no discomfort. Some temporary sensitivity may occur, but it typically resolves quickly.'] },
+            { heading: 'How white can my teeth become?', body: ['Results vary depending on the starting shade of your teeth, the type of staining present, and individual factors. Your dentist can provide realistic expectations during your consultation.'] },
+            { heading: 'Can whitening remove all stains?', body: ['Some stains respond better than others. Your dentist will assess your teeth and discuss alternative cosmetic options if whitening alone is unlikely to achieve your desired outcome.'] },
+          ],
+          body: [],
+        },
+        {
+          heading: 'Book Your Teeth Whitening Consultation in Kirwan',
+          body: [
+            "If you're ready to achieve a brighter, more confident smile, professional teeth whitening could be the solution you're looking for.",
+            'My Family Dental Townsville proudly helps patients from Kirwan and surrounding areas improve the appearance of their smiles with safe, professional dental care.',
+            'Book a consultation today to learn more about your teeth whitening options and take the first step toward a brighter smile.',
+          ],
+        },
+      ],
+      imageUrl: 'assets/teeth-whitening-hero.jpeg',
+      meta: {
+        title: 'Teeth Whitening in Kirwan | My Family Dental Townsville',
+        description: 'Professional teeth whitening in Kirwan at My Family Dental Townsville. Safe, effective treatments for a brighter smile. Book your consultation today.',
+        slug: 'teeth-whitening-kirwan-my-family-dental-townsville',
+      },
+    },
   },
 
   {
