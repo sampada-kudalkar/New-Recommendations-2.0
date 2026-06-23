@@ -5,11 +5,14 @@ import { nsaThemesConfig } from '../../data/nsaThemesConfig'
 import { getLocationsForRec } from '../../data/locationsData'
 import { useAppStore } from '../../store/useAppStore'
 import WhyThisMattersCard from '../recommendations/v2/WhyThisMattersCard'
-import CompetitorCitationsCardV2 from '../recommendations/v2/CompetitorCitationsCardV2'
 import TopCompetitorBlogsCard from '../recommendations/v2/TopCompetitorBlogsCard'
 import TopMentionsCard from '../recommendations/v2/TopMentionsCard'
 import {
-  TEETH_WHITENING_PROMPTS,
+  DENTAL_IMPLANT_PROMPTS,
+  MY_BUSINESS as DENTAL_MY_BUSINESS,
+  getResponseForPromptAndLlm as getDentalResponse,
+} from '../../data/dentalImplantResponses'
+import {
   TEETH_WHITENING_MY_BUSINESS,
   getTeethWhiteningResponse,
 } from '../../data/teethWhiteningResponses'
@@ -736,8 +739,7 @@ export default function ContentDetailPageV2() {
           </div>
         </div>
 
-        {/* ═══ CARD 5: Competitor citations (v2 — horizontal grid, no table) ═ */}
-        {rec.competitors.length > 0 && rec.id !== 'c3d4e5f6-b2c3-1234-cdef-teeth-whitening2' && <CompetitorCitationsCardV2 rec={rec} />}
+        {/* ═══ CARD 5: How you rank against competitors ══════════════════ */}
 
 
       </div>
@@ -903,23 +905,26 @@ export default function ContentDetailPageV2() {
       </div>
       )}
 
-      {/* TopMentionsCard — dental implants rec */}
-      {rec.id === '43d87f49-4a5b-45c8-b656-d70276b5b068' && (
-        <div className="px-6 pt-6 pb-0">
-          <TopMentionsCard />
-        </div>
-      )}
-
-      {/* TopMentionsCard — duplicate teeth whitening rec */}
-      {rec.id === 'c3d4e5f6-b2c3-1234-cdef-teeth-whitening2' && (
-        <div className="px-6 pt-6 pb-0">
-          <TopMentionsCard
-            prompts={TEETH_WHITENING_PROMPTS}
-            getResponse={getTeethWhiteningResponse}
-            myBusiness={TEETH_WHITENING_MY_BUSINESS}
-          />
-        </div>
-      )}
+      {/* TopMentionsCard — all recs */}
+      {(() => {
+        const themePrompts = nsaThemesConfig[rec.themeId]?.prompts ?? []
+        const isDentalImplants = rec.id === '43d87f49-4a5b-45c8-b656-d70276b5b068'
+        const isTeethWhitening = rec.themeId === 'teeth-whitening'
+        return (
+          <div className="px-6 pt-6 pb-0">
+            <TopMentionsCard
+              prompts={isDentalImplants ? DENTAL_IMPLANT_PROMPTS : themePrompts}
+              getResponse={
+                isDentalImplants ? getDentalResponse :
+                isTeethWhitening ? getTeethWhiteningResponse :
+                () => undefined
+              }
+              myBusiness={isDentalImplants ? DENTAL_MY_BUSINESS : TEETH_WHITENING_MY_BUSINESS}
+              rec={rec}
+            />
+          </div>
+        )
+      })()}
 
       {/* ═══ Last card: Top competitor blogs cited by AI ════════════════ */}
       <div className="px-6 pt-6 pb-6">

@@ -7,6 +7,7 @@ import {
   getResponseForPromptAndLlm as getDentalResponse,
   type DentalImplantResponse,
 } from '../../../data/dentalImplantResponses'
+import type { Recommendation } from '../../../types'
 import novaDentalLogo from '../../../assets/logos/nova-dental.png'
 import absolutelyDentalLogo from '../../../assets/logos/absolutely-dental.png'
 import townsvillePerioLogo from '../../../assets/logos/townsville-periodontics.png'
@@ -39,24 +40,84 @@ function toAiEntry(r: DentalImplantResponse): AiResponseEntry {
   }
 }
 
+// Build a fallback AiResponseEntry from rec competitors when no data file exists
+function buildFallbackEntry(
+  prompt: string,
+  llm: string,
+  rankings: string[],
+  myBusiness: string,
+): AiResponseEntry {
+  const lines = rankings
+    .filter(name => name !== myBusiness)
+    .map((name, i) => `${i + 1}. **${name}**\nHighly rated local provider for this service.`)
+    .join('\n\n')
+
+  return {
+    date: 'Jan 10, 2026',
+    location: 'Local area',
+    llm,
+    prompt,
+    response: lines || 'No detailed response data available for this prompt.',
+    citations: [],
+  }
+}
+
+// Generate 5 rankings from rec.competitors, inserting myBusiness at a varied position
+function buildFallbackRankings(
+  rec: Recommendation,
+  myBusiness: string,
+  promptIdx: number,
+): string[] {
+  const competitorNames = [...rec.competitors]
+    .sort((a, b) => (a.citationRank ?? 99) - (b.citationRank ?? 99))
+    .map(c => c.name)
+
+  // Pad to at least 5 by cycling
+  const padded: string[] = []
+  for (let i = 0; i < 5; i++) {
+    padded.push(competitorNames[i % competitorNames.length])
+  }
+
+  // Insert "You" at a varied position per prompt row (0→3, 1→4, 2→1)
+  const youPositions = [3, 4, 1]
+  const youIdx = youPositions[promptIdx % youPositions.length]
+  padded[youIdx] = myBusiness
+
+  return padded
+}
+
 // ── Main card ─────────────────────────────────────────────────────────────────
 interface TopMentionsCardProps {
   prompts?: string[]
   getResponse?: (prompt: string, llm: string) => DentalImplantResponse | undefined
   myBusiness?: string
+  rec?: Recommendation
 }
 
 export default function TopMentionsCard({
   prompts = DENTAL_IMPLANT_PROMPTS,
   getResponse = getDentalResponse,
   myBusiness = DENTAL_MY_BUSINESS,
+  rec,
 }: TopMentionsCardProps = {}) {
   const [selectedLlm, setSelectedLlm] = useState<LLM>('ChatGPT')
   const [modalEntry, setModalEntry] = useState<AiResponseEntry | null>(null)
 
-  const openModal = (prompt: string) => {
+  const openModal = (prompt: string, promptIdx: number) => {
     const entry = getResponse(prompt, selectedLlm)
-    if (entry) setModalEntry(toAiEntry(entry))
+    if (entry) {
+      setModalEntry(toAiEntry(entry))
+    } else if (rec) {
+      const rankings = buildFallbackRankings(rec, myBusiness, promptIdx)
+      setModalEntry(buildFallbackEntry(prompt, selectedLlm, rankings, myBusiness))
+    }
+  }
+
+  const getRankings = (prompt: string, promptIdx: number): string[] => {
+    const entry = getResponse(prompt, selectedLlm)
+    if (entry?.rankings?.length) return entry.rankings
+    if (rec) return buildFallbackRankings(rec, myBusiness, promptIdx)
+    return []
   }
 
   return (
@@ -106,15 +167,14 @@ export default function TopMentionsCard({
 
           {/* Prompt rows */}
           {prompts.map((prompt, idx) => {
-            const entry = getResponse(prompt, selectedLlm)
-            const rankings = entry?.rankings ?? []
+            const rankings = getRankings(prompt, idx)
             const isLast = idx === prompts.length - 1
 
             return (
               <button
                 key={prompt}
                 className={`group w-full flex items-start min-h-[68px] py-4 border-b border-[#eaeaea] hover:bg-[#f9f9f9] transition-colors text-left min-w-[700px] ${isLast ? 'border-b-0 rounded-b-[8px]' : ''}`}
-                onClick={() => openModal(prompt)}
+                onClick={() => openModal(prompt, idx)}
               >
                 {/* Prompt label */}
                 <div className="w-[280px] flex-shrink-0 pr-4">

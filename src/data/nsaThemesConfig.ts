@@ -83,4 +83,28 @@ export const nsaThemesConfig: Record<string, NsaTheme> = {
       'Locate affordable dental implant services in Kirwan QLD',
     ],
   },
+  'wisdom-teeth-removal': {
+    label: 'wisdom teeth removal',
+    prompts: [
+      'Find wisdom teeth removal specialists near me',
+      'Best clinics for wisdom tooth extraction in my area',
+      'Affordable wisdom teeth removal services nearby',
+    ],
+  },
+  'tooth-extraction': {
+    label: 'tooth extraction',
+    prompts: [
+      'Find emergency tooth extraction services near me',
+      'Best dental clinics for tooth extraction in my area',
+      'Affordable tooth removal dentists nearby',
+    ],
+  },
+  'business-information': {
+    label: 'dental services',
+    prompts: [
+      'Find a trusted dental clinic near me',
+      'Best family dentists in my area',
+      'Top rated dental practices nearby',
+    ],
+  },
 }
