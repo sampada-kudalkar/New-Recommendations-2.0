@@ -7,8 +7,11 @@ import { getLocationsForRec } from '../../data/locationsData'
 import { useAppStore } from '../../store/useAppStore'
 import { getDisplayScore } from '../../data/zeroScoreReplacements'
 import WhyThisMattersCard from '../recommendations/v2/WhyThisMattersCard'
-import CompetitorCitationsCardV2 from '../recommendations/v2/CompetitorCitationsCardV2'
-import AiResponseTableV2 from '../recommendations/v2/AiResponseTableV2'
+import TopMentionsCard from '../recommendations/v2/TopMentionsCard'
+import {
+  getTeethWhiteningResponse,
+  TEETH_WHITENING_MY_BUSINESS,
+} from '../../data/teethWhiteningResponses'
 
 
 // ── Category → metric mapping (kept for potential future use) ─────────────────
@@ -240,13 +243,19 @@ export default function GenericDetailPageV2() {
           </div>
         </div>
 
-        {/* ═══ CARD 4: Competitor citations (v2 — horizontal grid, no table) ═ */}
-        {rec.competitors.length > 0 && (
-          <CompetitorCitationsCardV2 rec={rec} />
-        )}
-
-        {/* ═══ CARD 5: How did AI sites respond (v2 — 3 columns) ══════════ */}
-        <AiResponseTableV2 rec={rec} />
+        {/* ═══ CARD 4: How you rank against competitors ══════════════════ */}
+        {(() => {
+          const themePrompts = nsaThemesConfig[rec.themeId]?.prompts ?? []
+          const isTeethWhitening = rec.themeId === 'teeth-whitening'
+          return (
+            <TopMentionsCard
+              prompts={themePrompts}
+              getResponse={isTeethWhitening ? getTeethWhiteningResponse : () => undefined}
+              myBusiness={TEETH_WHITENING_MY_BUSINESS}
+              rec={rec}
+            />
+          )
+        })()}
 
         <div className="h-4 flex-shrink-0" />
       </div>
